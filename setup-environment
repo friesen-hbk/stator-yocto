@@ -1,0 +1,36 @@
+#!/bin/sh
+CWD=`pwd`
+
+DEFAULT_MACHINE=some-machine-name
+LIST_MACHINES=`ls -d  -- conf/*/ | sed 's/conf//'`
+
+. firmware-version
+
+clean_up()
+{
+   unset EULA LIST_MACHINES VALID_MACHINE
+   unset CWD TEMPLATES SHORTOPTS LONGOPTS ARGS PROGNAME
+   unset generated_config updated
+   unset MACHINE SDKMACHINE DISTRO OEROOT
+}
+
+if [ -z "$MACHINE" ]; then
+    MACHINE=$DEFAULT_MACHINE
+fi
+
+VALID_MACHINE=`echo -e "$LIST_MACHINES" | grep ${MACHINE} | wc -l`
+
+if [ "x$MACHINE" = "x" ] || [ "$VALID_MACHINE" = "0" ]; then
+    echo -e "\nThe \$MACHINE you have specified ($MACHINE) is not supported by this build setup"
+    echo -e "These are the supported machines"
+    echo $LIST_MACHINES
+    clean_up
+    return 1
+fi
+
+OEROOT=$PWD/external/openembedded-core
+BUILD_DIR=$CWD/$1
+. $OEROOT/oe-init-build-env $BUILD_DIR
+
+ln -sf $CWD/conf/$MACHINE/local.conf $BUILD_DIR/conf/local.conf
+ln -sf $CWD/conf/$MACHINE/bblayers.conf $BUILD_DIR/conf/bblayers.conf

@@ -1,0 +1,118 @@
+image: gitlab.hbm.com:5555/docker/next:latest
+
+variables:
+  LANG: en_US.UTF-8
+  LC_MESSAGES: POSIX
+  GIT_SUBMODULE_STRATEGY: recursive
+  BB_ENV_EXTRAWHITE: "$BB_ENV_EXTRAWHITE SSTATE_DIR SSTATE_MIRRORS DL_DIR"
+  SSTATE_DIR: /share/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/build-sstate-cache
+  SSTATE_MIRRORS: " file://.* file:///share/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/build-sstate-cache/PATH "
+  DL_DIR: /downloads/yocto
+
+
+before_script:
+  - sudo mkdir -p /share/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/build-sstate-cache
+  - sudo chown buildbot:buildbot /share/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/build-sstate-cache
+  - sudo mkdir -p /downloads/yocto
+  - sudo chown buildbot:buildbot /downloads/yocto
+
+stages:
+  - get
+  - build
+
+######
+# GET
+######
+
+#get-card-qemu:
+#  stage: get
+#  variables:
+#    MACHINE: qemu
+#  script:
+#    - ./bootstrap-yocto
+#    - source base/setup-environment build-frame-qemu
+#    - bitbake hbk-card
+#  tags:
+#    - docker
+
+get-card-eval:
+  stage: get
+  variables:
+    MACHINE: hbk-card-g1
+  script:
+    - ./bootstrap-yocto
+    - source setup-environment build-card-eval
+    - bitbake hbk-card --runall=fetch
+  tags:
+    - docker
+
+#get-frame-qemu:
+#  stage: get
+#  variables:
+#    MACHINE: qemu
+#  script:
+#    - ./bootstrap-yocto
+#    - source setup-environment build-frame-qemu
+#    - bitbake hbk-frame --runall=fetch
+#  tags:
+#    - docker
+
+get-frame-eval:
+  stage: get
+  variables:
+    MACHINE: hbk-frame-g1
+  script:
+    - env
+    - ./bootstrap-yocto
+    - source setup-environment build-frame-eval
+    - bitbake hbk-frame --runall=fetch
+  tags:
+    - docker
+
+#######
+# BUILD
+#######
+#build-card-qemu:
+#  stage: build
+#  variables:
+#    MACHINE: qemu
+#  script:
+#    - ./bootstrap-yocto
+#    - source setup-environment build-frame-qemu
+#    - bitbake hbk-card
+#  tags:
+#    - docker
+
+build-card-eval:
+  stage: build
+  variables:
+    MACHINE: hbk-card-g1
+  script:
+    - ./bootstrap-yocto
+    - source setup-environment build-card-eval
+    - bitbake hbk-card
+  tags:
+    - docker
+
+#build-frame-qemu:
+#  stage: build
+#  variables:
+#    MACHINE: qemu
+#  script:
+#    - ./bootstrap-yocto
+#    - source setup-environment build-frame-qemu
+#    - bitbake hbk-frame
+#  tags:
+#    - docker
+
+build-frame-eval:
+  stage: build
+  variables:
+    MACHINE: hbk-frame-g1
+  script:
+    - env
+    - ./bootstrap-yocto
+    - source setup-environment build-frame-eval
+    - bitbake hbk-frame
+  tags:
+    - docker

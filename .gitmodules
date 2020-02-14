@@ -1,0 +1,4 @@
+[submodule "meta-altera"]
+	path = external/meta-altera
+	url = git://github.com/kraj/meta-altera.git
+	branch = master
