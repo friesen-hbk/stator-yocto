@@ -113,7 +113,7 @@ bootstrap()
     #$REPO forall -v -c 'echo $REPO_PATH && git checkout --track $REPO_REMOTE/$REPO_RREV'
     #[ $? != 0 ] && echo -e "\nERROR: Could not track remotes" && return 1
 
-    ln -fs meta-hbk/scripts scripts
+    #ln -fs meta-hbk/scripts scripts
 
     return 0
 }
@@ -143,20 +143,18 @@ echo -e "
     Suggested next steps:
 
     To build card firmware for QEMU:
-        MACHINE=qemu source setup-environment build-card-qemu
-        bitbake hbk-card
+        MACHINE=qemu source setup-environment build-ngt-qemu
+        bitbake hdimage
+		bitbake hbg
 
-    To build card firmware for the ESPRESSObin eval board:
-        MACHINE=hbk-card-g1 source setup-environment build-card-eval
-        bitbake hbk-card
-
-    To build frame firmware for QEMU:
-        MACHINE=qemu source setup-environment build-frame-qemu
-        bitbake hbk-frame
-
-    To build frame firmware for the MACCHIATObin eval board:
-        MACHINE=hbk-frame-g1 source setup-environment build-frame-eval
-        bitbake hbk-frame
+    To build card firmware for the NGT board:
+        MACHINE=ngt source setup-environment build-ngt
+        bitbake flash
+		bitbake hbg
+		
+    To build frame firmware for the Atlas-Board:
+        MACHINE=atlas source setup-environment build-atlas
+        bitbake sdimage
 "
 
 clean_up

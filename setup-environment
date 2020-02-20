@@ -4,8 +4,6 @@ CWD=`pwd`
 DEFAULT_MACHINE=some-machine-name
 LIST_MACHINES=`ls -d  -- conf/*/ | sed 's/conf//'`
 
-. firmware-version
-
 clean_up()
 {
    unset EULA LIST_MACHINES VALID_MACHINE
