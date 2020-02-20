@@ -35,14 +35,14 @@ stages:
 #  tags:
 #    - docker
 
-get-card-eval:
+get-ngt:
   stage: get
   variables:
-    MACHINE: hbk-card-g1
+    MACHINE: ngt
   script:
     - ./bootstrap-yocto
-    - source setup-environment build-card-eval
-    - bitbake hbk-card --runall=fetch
+    - source setup-environment build-ngt
+    - bitbake flash --runall=fetch
   tags:
     - docker
 
@@ -57,14 +57,14 @@ get-card-eval:
 #  tags:
 #    - docker
 
-get-frame-eval:
+get-atlas:
   stage: get
   variables:
-    MACHINE: hbk-frame-g1
+    MACHINE: atlas
   script:
     - env
     - ./bootstrap-yocto
-    - source setup-environment build-frame-eval
+    - source setup-environment build-atlas
     - bitbake hbk-frame --runall=fetch
   tags:
     - docker
@@ -83,14 +83,14 @@ get-frame-eval:
 #  tags:
 #    - docker
 
-build-card-eval:
+build-ngt:
   stage: build
   variables:
-    MACHINE: hbk-card-g1
+    MACHINE: ngt
   script:
     - ./bootstrap-yocto
-    - source setup-environment build-card-eval
-    - bitbake hbk-card
+    - source setup-environment build-ngt
+    - bitbake flash
   tags:
     - docker
 
@@ -105,14 +105,14 @@ build-card-eval:
 #  tags:
 #    - docker
 
-build-frame-eval:
+build-atlas:
   stage: build
   variables:
-    MACHINE: hbk-frame-g1
+    MACHINE: atlas
   script:
     - env
     - ./bootstrap-yocto
-    - source setup-environment build-frame-eval
-    - bitbake hbk-frame
+    - source setup-environment build-atlas
+    - bitbake sdimage
   tags:
     - docker
