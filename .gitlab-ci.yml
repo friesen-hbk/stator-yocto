@@ -24,17 +24,6 @@ stages:
 # GET
 ######
 
-#get-card-qemu:
-#  stage: get
-#  variables:
-#    MACHINE: qemu
-#  script:
-#    - ./bootstrap-yocto
-#    - source base/setup-environment build-frame-qemu
-#    - bitbake hbk-card
-#  tags:
-#    - docker
-
 get-ngt:
   stage: get
   variables:
@@ -46,17 +35,6 @@ get-ngt:
   tags:
     - docker
 
-#get-frame-qemu:
-#  stage: get
-#  variables:
-#    MACHINE: qemu
-#  script:
-#    - ./bootstrap-yocto
-#    - source setup-environment build-frame-qemu
-#    - bitbake hbk-frame --runall=fetch
-#  tags:
-#    - docker
-
 get-atlas:
   stage: get
   variables:
@@ -65,23 +43,13 @@ get-atlas:
     - env
     - ./bootstrap-yocto
     - source setup-environment build-atlas
-    - bitbake hbk-frame --runall=fetch
+    - bitbake sdimage --runall=fetch
   tags:
     - docker
 
 #######
 # BUILD
 #######
-#build-card-qemu:
-#  stage: build
-#  variables:
-#    MACHINE: qemu
-#  script:
-#    - ./bootstrap-yocto
-#    - source setup-environment build-frame-qemu
-#    - bitbake hbk-card
-#  tags:
-#    - docker
 
 build-ngt:
   stage: build
@@ -93,17 +61,6 @@ build-ngt:
     - bitbake flash
   tags:
     - docker
-
-#build-frame-qemu:
-#  stage: build
-#  variables:
-#    MACHINE: qemu
-#  script:
-#    - ./bootstrap-yocto
-#    - source setup-environment build-frame-qemu
-#    - bitbake hbk-frame
-#  tags:
-#    - docker
 
 build-atlas:
   stage: build
