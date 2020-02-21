@@ -1,4 +1,4 @@
-DESCRIPTION = "A base for HBK images"
+DESCRIPTION = "A base for NGT images"
 LICENSE = "MIT"
 
 IMAGE_FEATURES += "\
@@ -10,9 +10,5 @@ IMAGE_FEATURES += "\
 inherit core-image
 
 CORE_IMAGE_EXTRA_INSTALL += "\
-    python \
-    file \
-    cryptsetup \
-    e2fsprogs \
-    pciutils \
+   hbm
 "
