@@ -2,3 +2,6 @@
 	path = external/meta-altera
 	url = git://github.com/kraj/meta-altera.git
 	branch = master
+[submodule "external/meta-ptx"]
+	path = external/meta-ptx
+	url = https://github.com/pengutronix/meta-ptx.git
