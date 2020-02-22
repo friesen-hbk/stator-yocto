@@ -9,6 +9,6 @@ IMAGE_FEATURES += "\
 
 inherit core-image
 
-CORE_IMAGE_EXTRA_INSTALL += "\
-   hbm
-"
+#CORE_IMAGE_EXTRA_INSTALL += "\
+#	barebox \
+#"

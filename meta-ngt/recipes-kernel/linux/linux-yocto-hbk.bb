@@ -14,11 +14,11 @@ PR = "r0"
 SRCREV_machine_ngt ?= "1fc888264c16696efac2751cfb470c8bd773d9e8"
 SRCREV_machine_atlas ?= "1fc888264c16696efac2751cfb470c8bd773d9e8"
 
-KMACHINE_ngt ?= "armada80xx"
-KMACHINE_atlas ?= "armada37xx"
+KMACHINE_ngt ?= "socfpga"
+KMACHINE_atlas ?= "socfpga"
 
-COMPATIBLE_MACHINE_ngt = "armada80xx"
-COMPATIBLE_MACHINE_atlas = "armada37xx"
+COMPATIBLE_MACHINE_ngt = "socfpga"
+COMPATIBLE_MACHINE_atlas = "socfpga"
 
 LINUX_VERSION_ngt = "${PV}"
 LINUX_VERSION_atlas = "${PV}"
