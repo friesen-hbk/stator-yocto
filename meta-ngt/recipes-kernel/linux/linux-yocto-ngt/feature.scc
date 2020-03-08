@@ -1,1 +1,2 @@
-patch 0001-linux-version-tweak.patch
+patch 0001-Revert-net-stmmac-platform-Fix-MDIO-init-for-platfor.patch
+patch patch-5.4.10-rt5.patch

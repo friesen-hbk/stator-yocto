@@ -1,0 +1,27 @@
+From a667a1e6009c858bc8cf49e11db3456e1bcfbd1d Mon Sep 17 00:00:00 2001
+From: Tim Sander <tim.sander@hbm.com>
+Date: Mon, 13 Jan 2020 18:06:28 +0100
+Subject: [PATCH] Revert "net: stmmac: platform: Fix MDIO init for platforms
+ without PHY"
+
+This reverts commit bfdbfd28f76028b960458d107dc4ae9240c928b3.
+---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+index cc8d7e7bf9ac..bedaff0c13bd 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+@@ -320,7 +320,7 @@ static int stmmac_mtl_setup(struct platform_device *pdev,
+ static int stmmac_dt_phy(struct plat_stmmacenet_data *plat,
+ 			 struct device_node *np, struct device *dev)
+ {
+-	bool mdio = false;
++	bool mdio = true;
+ 	static const struct of_device_id need_mdio_ids[] = {
+ 		{ .compatible = "snps,dwc-qos-ethernet-4.10" },
+ 		{},
+-- 
+2.20.1
+
