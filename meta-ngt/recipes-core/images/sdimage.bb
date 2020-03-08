@@ -1,1 +1,1 @@
-inherit ngt-base
+inherit ngt
