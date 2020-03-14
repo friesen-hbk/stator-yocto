@@ -1,0 +1,396 @@
+From 589aedec6d44d372fe7551970158100c06d19c4b Mon Sep 17 00:00:00 2001
+From: Tim Sander <tim.sander@hbm.com>
+Date: Tue, 3 Dec 2019 17:08:20 +0100
+Subject: [PATCH 06/11] fpga: add fpga-region support
+
+Signed-off-by: Steffen Trumtrar <s.trumtrar@pengutronix.de>
+---
+ common/firmware.c          |  44 ++++++++
+ drivers/firmware/socfpga.c |   1 +
+ drivers/fpga/Kconfig       |   6 +
+ drivers/fpga/Makefile      |   2 +-
+ drivers/fpga/fpga-bridge.c |   3 +
+ drivers/fpga/fpga-region.c | 219 +++++++++++++++++++++++++++++++++++++
+ drivers/net/Kconfig        |   1 +
+ include/firmware.h         |   2 +
+ 8 files changed, 277 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/fpga/fpga-region.c
+
+diff --git a/common/firmware.c b/common/firmware.c
+index 609cf118224e..406e17cf76b2 100644
+--- a/common/firmware.c
++++ b/common/firmware.c
+@@ -13,6 +13,9 @@
+ 
+ #include <firmware.h>
+ #include <common.h>
++#include <environment.h>
++#include <globalvar.h>
++#include <magicvar.h>
+ #include <malloc.h>
+ #include <xfuncs.h>
+ #include <fcntl.h>
+@@ -35,6 +38,8 @@ struct firmware_mgr {
+ 
+ static LIST_HEAD(firmwaremgr_list);
+ 
++static char *firmware_path;
++
+ /*
+  * firmwaremgr_find - find a firmware device handler
+  *
+@@ -206,6 +211,9 @@ int firmwaremgr_register(struct firmware_handler *fh)
+ 
+ 	list_add_tail(&mgr->list, &firmwaremgr_list);
+ 
++	firmware_path = xstrdup("");
++	globalvar_add_simple_string("firmware.root", &firmware_path);
++
+ 	return 0;
+ out:
+ 	free(cdev->name);
+@@ -228,3 +236,39 @@ int firmwaremgr_load_file(struct firmware_mgr *mgr, const char *firmware)
+ 
+ 	return ret;
+ }
++
++int of_firmwaremgr_load_file(struct device_node *np, const char *firmware)
++{
++	struct device_node *mgr_node;
++	struct firmware_handler *fh;
++	struct firmware_mgr *mgr;
++	struct device_d *dev;
++
++	mgr_node = of_parse_phandle(np, "fpga-mgr", 0);
++
++	if (mgr_node) {
++		const char *full_name = NULL;
++
++		dev = of_find_device_by_node(mgr_node);
++		if (!dev)
++			return -ENODEV;
++
++		fh = dev->priv;
++		if (!fh)
++			return -ENODEV;
++
++		mgr = firmwaremgr_find(fh->id);
++
++		if (strlen(firmware_path) > 1)
++			full_name = basprintf("%s/%s", firmware_path, firmware);
++		else
++			full_name = firmware;
++
++		return firmwaremgr_load_file(mgr, full_name);
++	}
++
++	return -ENODEV;
++}
++
++BAREBOX_MAGICVAR_NAMED(global_firmware_root, global.firmware.root,
++		       "directory where firmware files are found");
+diff --git a/drivers/firmware/socfpga.c b/drivers/firmware/socfpga.c
+index a33c94cef51b..160aae1a5c84 100644
+--- a/drivers/firmware/socfpga.c
++++ b/drivers/firmware/socfpga.c
+@@ -449,6 +449,7 @@ static int fpgamgr_probe(struct device_d *dev)
+ 	if (model)
+ 		fh->model = xstrdup(model);
+ 	fh->dev = dev;
++	dev->priv = fh;
+ 
+ 	dev_dbg(dev, "Registering FPGA firmware programmer\n");
+ 
+diff --git a/drivers/fpga/Kconfig b/drivers/fpga/Kconfig
+index 77ae52519a50..5f45d0cf5a34 100644
+--- a/drivers/fpga/Kconfig
++++ b/drivers/fpga/Kconfig
+@@ -13,6 +13,12 @@ config FPGA
+ 
+ if FPGA
+ 
++config FPGA_STARTUP
++	bool "Probe on system start"
++	help
++	  Say 'y' here if the FPGA framework should program the FPGA regions
++	  on system start up.
++
+ config FPGA_BRIDGE
+ 	tristate "FPGA Bridge Framework"
+ 	help
+diff --git a/drivers/fpga/Makefile b/drivers/fpga/Makefile
+index 86178fe7c078..532037035780 100644
+--- a/drivers/fpga/Makefile
++++ b/drivers/fpga/Makefile
+@@ -3,5 +3,5 @@
+ #
+ 
+ # FPGA Bridge Drivers
+-obj-$(CONFIG_FPGA_BRIDGE)		+= fpga-bridge.o
++obj-$(CONFIG_FPGA_BRIDGE)		+= fpga-bridge.o fpga-region.o
+ obj-$(CONFIG_SOCFPGA_FPGA_BRIDGE)	+= socfpga-hps2fpga-bridge.o socfpga-fpga2sdram-bridge.o
+diff --git a/drivers/fpga/fpga-bridge.c b/drivers/fpga/fpga-bridge.c
+index c7f1ee9ff006..b2d030d85f9f 100644
+--- a/drivers/fpga/fpga-bridge.c
++++ b/drivers/fpga/fpga-bridge.c
+@@ -76,6 +76,9 @@ struct fpga_bridge *of_fpga_bridge_get(struct device_node *np,
+ 	if (!dev || !dev->priv)
+ 		return ERR_PTR(ret);
+ 
++	if (!dev->priv)
++		return -ENODEV;
++
+ 	bridge = dev->priv;
+ 
+ 	bridge->info = info;
+diff --git a/drivers/fpga/fpga-region.c b/drivers/fpga/fpga-region.c
+new file mode 100644
+index 000000000000..2631ad5820cf
+--- /dev/null
++++ b/drivers/fpga/fpga-region.c
+@@ -0,0 +1,219 @@
++/*
++ * FPGA Region - Device Tree support for FPGA programming under Linux
++ *
++ *  Copyright (C) 2013-2016 Altera Corporation
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms and conditions of the GNU General Public License,
++ * version 2, as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
++ * more details.
++ *
++ * You should have received a copy of the GNU General Public License along with
++ * this program.  If not, see <http://www.gnu.org/licenses/>.
++ */
++
++#include <common.h>
++#include <init.h>
++#include <fpga-bridge.h>
++#include <fpga-mgr.h>
++#include <firmware.h>
++#include <linux/list.h>
++
++/**
++ * struct fpga_region - FPGA Region structure
++ * @dev: FPGA Region device
++ * @mutex: enforces exclusive reference to region
++ * @bridge_list: list of FPGA bridges specified in region
++ * @info: fpga image specific information
++ */
++struct fpga_region {
++	struct device_d dev;
++	struct list_head bridge_list;
++	struct fpga_image_info *info;
++	const char *firmware_name;
++};
++
++#define to_fpga_region(d) container_of(d, struct fpga_region, dev)
++
++static const struct of_device_id fpga_region_of_match[] = {
++	{ .compatible = "fpga-region", },
++	{ /* sentinel */ },
++};
++
++/**
++ * fpga_region_get_bridges - create a list of bridges
++ * @region: FPGA region
++ * @overlay: device node of the overlay
++ *
++ * Create a list of bridges including the parent bridge and the bridges
++ * specified by "fpga-bridges" property.  Note that the
++ * fpga_bridges_enable/disable/put functions are all fine with an empty list
++ * if that happens.
++ *
++ * Caller should call fpga_bridges_put(&region->bridge_list) when
++ * done with the bridges.
++ *
++ * Return 0 for success (even if there are no bridges specified)
++ * or -EBUSY if any of the bridges are in use.
++ */
++static int fpga_region_get_bridges(struct fpga_region *region,
++				   struct device_node *overlay)
++{
++	struct device_d *dev = &region->dev;
++	struct device_node *region_np = dev->device_node;
++	struct device_node *br, *np, *parent_br = NULL;
++	int i, ret;
++
++	/* If parent is a bridge, add to list */
++	ret = fpga_bridge_get_to_list(region_np->parent, region->info,
++				      &region->bridge_list);
++	if (!ret) {
++		parent_br = region_np->parent;
++		dev_dbg(dev, "Add %s to list of bridges\n", parent_br->name);
++	}
++
++	/* If overlay has a list of bridges, use it. */
++	if (of_parse_phandle(overlay, "fpga-bridges", 0))
++		np = overlay;
++	else
++		np = region_np;
++
++	for (i = 0; ; i++) {
++		br = of_parse_phandle(np, "fpga-bridges", i);
++		if (!br)
++			break;
++
++		/* If parent bridge is in list, skip it. */
++		if (br == parent_br)
++			continue;
++
++		/* If node is a bridge, get it and add to list */
++		ret = fpga_bridge_get_to_list(br, region->info,
++					      &region->bridge_list);
++		if (ret)
++			return ret;
++
++		dev_dbg(dev, "Add %s to list of bridges\n", br->name);
++	}
++
++	return 0;
++}
++
++/**
++ * fpga_region_program_fpga - program FPGA
++ * @region: FPGA region
++ * @firmware_name: name of FPGA image firmware file
++ * @overlay: device node of the overlay
++ * Program an FPGA using information in the device tree.
++ * Function assumes that there is a firmware-name property.
++ * Return 0 for success or negative error code.
++ */
++static int fpga_region_program_fpga(struct fpga_region *region)
++{
++	struct device_node *np = region->dev.device_node;
++	int ret;
++
++	ret = fpga_region_get_bridges(region, np);
++	if (ret) {
++		dev_err(&region->dev, "failed to get fpga region bridges (%d)\n",
++			ret);
++		goto err;
++	}
++
++	ret = fpga_bridges_disable(&region->bridge_list);
++	if (ret) {
++		dev_err(&region->dev, "failed to disable region bridges (%d)\n",
++			ret);
++		goto err;
++	}
++
++	ret = of_firmwaremgr_load_file(np, region->firmware_name);
++	if (ret) {
++		dev_err(&region->dev, "failed to load fpga image %s (%d)\n",
++                       region->firmware_name, ret);
++		goto err;
++	}
++
++	ret = fpga_bridges_enable(&region->bridge_list);
++	if (ret) {
++		dev_err(&region->dev, "failed to enable region bridges (%d)\n",
++			ret);
++		goto err;
++	}
++
++	return 0;
++
++err:
++	return ret;
++}
++
++static int fpga_region_detect(struct device_d *dev)
++{
++	struct fpga_region *region = dev->priv;
++	struct device_node *np = dev->device_node;
++	int ret;
++
++	ret = fpga_region_program_fpga(region);
++	if (ret)
++		return ret;
++
++	of_platform_populate(np, fpga_region_of_match, dev);
++
++	return ret;
++}
++
++static int fpga_region_probe(struct device_d *dev)
++{
++	struct device_node *np = dev->device_node;
++	struct fpga_region *region;
++	int ret = 0;
++
++	region = xzalloc(sizeof(*region));
++	if (!region)
++		return -ENOMEM;
++
++	INIT_LIST_HEAD(&region->bridge_list);
++
++	region->dev.parent = dev;
++	region->dev.device_node = np;
++	region->dev.id = DEVICE_ID_DYNAMIC;
++	region->dev.detect = fpga_region_detect;
++	region->dev.priv = region;
++
++	strcpy(region->dev.name, "region");
++
++	region->info = xzalloc(sizeof(*region->info));
++
++	ret = register_device(&region->dev);
++	if (ret)
++		goto out;
++
++	of_property_read_string(np, "firmware-name", &region->firmware_name);
++
++	dev_info(dev, "FPGA Region probed\n");
++
++	if (IS_ENABLED(CONFIG_FPGA_STARTUP))
++		return fpga_region_detect(&region->dev);
++
++	return 0;
++
++out:
++	kfree(region);
++
++	return ret;
++}
++
++static struct driver_d fpga_region_driver = {
++	.probe = fpga_region_probe,
++	.of_compatible = DRV_OF_COMPAT(fpga_region_of_match),
++};
++
++static int fpga_region_init(void)
++{
++	return platform_driver_register(&fpga_region_driver);
++}
++coredevice_initcall(fpga_region_init);
+diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
+index 57f0b57d64b1..28e3b590c7fa 100644
+--- a/drivers/net/Kconfig
++++ b/drivers/net/Kconfig
+@@ -64,6 +64,7 @@ config DRIVER_NET_DESIGNWARE
+ 	bool "Designware Universal MAC ethernet platform support"
+ 	depends on HAS_DMA
+ 	select PHYLIB
++	select MFD_SYSCON
+ 	help
+ 	  This option enables support for the Synopsys
+ 	  Designware Core Univesal MAC 10M/100M/1G ethernet IP.
+diff --git a/include/firmware.h b/include/firmware.h
+index 7c01a77118eb..666419ac955c 100644
+--- a/include/firmware.h
++++ b/include/firmware.h
+@@ -62,4 +62,6 @@ static inline int firmwaremgr_load_file(struct firmware_mgr *mgr, const char *pa
+ 		*size = _fw_##name##_end - _fw_##name##_start;	\
+ 	}
+ 
++int of_firmwaremgr_load_file(struct device_node *np, const char *firmware);
++
+ #endif /* FIRMWARE_H */
+-- 
+2.20.1
+

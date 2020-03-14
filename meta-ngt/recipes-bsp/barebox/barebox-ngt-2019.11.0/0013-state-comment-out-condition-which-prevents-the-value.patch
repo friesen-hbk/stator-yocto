@@ -1,0 +1,69 @@
+From 9a4179730fc97b040c9d431d10bcc7d0ba252d9c Mon Sep 17 00:00:00 2001
+From: Tim Sander <tim.sander@hbm.com>
+Date: Tue, 3 Dec 2019 17:22:11 +0100
+Subject: [PATCH 13/14] state: comment out condition which prevents the values
+ from beeing available in device tree
+
+---
+ common/state/state_variables.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/common/state/state_variables.c b/common/state/state_variables.c
+index 6a00c82203b8..f0546b1f522a 100644
+--- a/common/state/state_variables.c
++++ b/common/state/state_variables.c
+@@ -69,10 +69,10 @@ static int state_uint32_export(struct state_variable *var,
+ 		if (ret)
+ 			return ret;
+ 	}
+-
++/*
+ 	if (conv == STATE_CONVERT_FIXUP)
+ 		return 0;
+-
++*/
+ 	return of_property_write_u32(node, "value", su32->value);
+ }
+ 
+@@ -184,10 +184,10 @@ static int state_enum32_export(struct state_variable *var,
+ 	ret = of_set_property(node, "names", prop, len, 1);
+ 
+ 	free(prop);
+-
++/*
+ 	if (conv == STATE_CONVERT_FIXUP)
+ 		return 0;
+-
++*/
+ 	ret = of_property_write_u32(node, "value", enum32->value);
+ 	if (ret)
+ 		return ret;
+@@ -283,10 +283,10 @@ static int state_mac_export(struct state_variable *var,
+ 		if (ret)
+ 			return ret;
+ 	}
+-
++/*
+ 	if (conv == STATE_CONVERT_FIXUP)
+ 		return 0;
+-
++*/
+ 	return of_property_write_u8_array(node, "value", mac->value,
+ 					  ARRAY_SIZE(mac->value));
+ }
+@@ -344,10 +344,10 @@ static int state_string_export(struct state_variable *var,
+ 		if (ret)
+ 			return ret;
+ 	}
+-
++/*
+ 	if (conv == STATE_CONVERT_FIXUP)
+ 		return 0;
+-
++*/
+ 	if (string->value)
+ 		ret = of_property_write_string(node, "value", string->value);
+ 
+-- 
+2.20.1
+

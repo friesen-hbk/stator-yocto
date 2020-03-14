@@ -1,0 +1,84 @@
+From 7c28e6679d83ca59a680e02e96863e857eb3f62c Mon Sep 17 00:00:00 2001
+From: Steffen Trumtrar <s.trumtrar@pengutronix.de>
+Date: Fri, 20 May 2016 10:47:35 +0200
+Subject: [PATCH 10/11] firmware: add support for compressed images
+
+Signed-off-by: Steffen Trumtrar <s.trumtrar@pengutronix.de>
+---
+ common/firmware.c | 51 +++++++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 47 insertions(+), 4 deletions(-)
+
+diff --git a/common/firmware.c b/common/firmware.c
+index 406e17cf76b2..f7692c23df25 100644
+--- a/common/firmware.c
++++ b/common/firmware.c
+@@ -25,6 +25,8 @@
+ #include <linux/list.h>
+ #include <linux/stat.h>
+ #include <linux/err.h>
++#include <uncompress.h>
++#include <filetype.h>
+ 
+ #define BUFSIZ 4096
+ 
+@@ -227,12 +229,53 @@ out:
+  */
+ int firmwaremgr_load_file(struct firmware_mgr *mgr, const char *firmware)
+ {
+-	int ret;
+-	char *name = basprintf("/dev/%s", mgr->handler->id);
++	char *dst = basprintf("/dev/%s", mgr->handler->id);
++	enum filetype type;
++	int ret = -ENOENT;
++	int srcfd = 0;
++	int dstfd = 0;
++	char buf[32];
++
++	if (firmware) {
++		srcfd = open(firmware, O_RDONLY);
++		if (srcfd < 0) {
++			pr_err("could not open %s: %s\n", firmware, errno_str());
++			return srcfd;
++		}
++
++		ret = read(srcfd, buf, sizeof(buf));
++		if (ret < sizeof(buf))
++			goto out;
++
++		type = file_detect_type(buf, 32);
++		if ((int)type < 0) {
++			printf("could not open %s: %s\n", firmware,
++					strerror(-type));
++			ret = (int)type;
++			goto out;
++		}
++
++		if (type == filetype_unknown) {
++			ret = copy_file(firmware, dst, 0);
++		} else {
++			dstfd = open(dst, O_WRONLY | O_CREAT);
+ 
+-	ret = copy_file(firmware, name, 0);
++			if (dstfd < 0) {
++				printf("could not open %s: %s\n", dst, errno_str());
++				ret = dstfd;
++				goto out;
++			}
+ 
+-	free(name);
++			lseek(srcfd, 0, SEEK_SET);
++
++			ret = uncompress_fd_to_fd(srcfd, dstfd, uncompress_err_stdout);
++
++			close(dstfd);
++		}
++	}
++out:
++	close(srcfd);
++	free(dst);
+ 
+ 	return ret;
+ }
+-- 
+2.20.1
+
