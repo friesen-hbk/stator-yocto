@@ -24,8 +24,6 @@ COMPATIBLE_MACHINE = "none"
 
 EXTRA_OEMAKE = "CROSS_COMPILE=${TARGET_PREFIX}"
 
-
-
 do_configure() {
 	if [ -e ${WORKDIR}/barebox.config.${PV} ]; then
 		cp ${WORKDIR}/barebox.config.${PV} ${S}/.config

@@ -10,5 +10,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=057bf9e50e1ca857d0eb97bfe4ba8e5d"
 
 PV="2017.08.0"
 
+FILESEXTRAPATHS_prepend := "${THISDIR}/barebox-${PV}:"
+
 COMPATIBLE_MACHINE_atlas-board = "atlas-board"
 

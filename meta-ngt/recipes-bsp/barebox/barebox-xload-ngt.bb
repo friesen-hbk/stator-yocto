@@ -1,4 +1,4 @@
-require barebox.inc
+require barebox-xload.inc
 
 SRC_URI[md5sum] = "45bf108b22de94a73dfe5c024c873486"
 SRC_URI[sha256sum] = "607165b96d98fcc114fbd07e4001e7b527739a543e7adbe019854fbd8c78777f"
@@ -9,9 +9,9 @@ PV="2019.11.0"
 
 COMPATIBLE_MACHINE_ngt-board = "ngt-board"
 
+FILESEXTRAPATHS_prepend := "${THISDIR}/barebox-${PV}:"
 
 SRC_URI += "file://barebox-xload.config.${PV}"
-
 
 SRC_URI += "file://0001-ARM-add-fncpy.h-from-linux-v4.6.patch"
 SRC_URI += "file://0002-firmware-socfpga-set-APPLYCFG-after-loading-bitstrea.patch"

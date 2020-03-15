@@ -9,10 +9,10 @@ PV="2019.11.0"
 
 COMPATIBLE_MACHINE_ngt-board = "ngt-board"
 
+FILESEXTRAPATHS_prepend := "${THISDIR}/barebox-${PV}:"
 
 SRC_URI += "file://barebox.config.${PV}"
-
-
+SRC_URI += "file://env"
 SRC_URI += "file://0001-ARM-add-fncpy.h-from-linux-v4.6.patch"
 SRC_URI += "file://0002-firmware-socfpga-set-APPLYCFG-after-loading-bitstrea.patch"
 SRC_URI += "file://0003-reset-add-of_reset_control_get-to-header.patch"
