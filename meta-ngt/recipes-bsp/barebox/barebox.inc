@@ -24,9 +24,12 @@ COMPATIBLE_MACHINE = "none"
 
 EXTRA_OEMAKE = "CROSS_COMPILE=${TARGET_PREFIX}"
 
+
+
 do_configure() {
-	if [ -e ${WORKDIR}/defconfig ]; then
-		cp ${WORKDIR}/defconfig ${S}/.config
+	if [ -e ${WORKDIR}/barebox-${PV}.config ]; then
+		bbnote "${WORKDIR}"
+		cp ${WORKDIR}/barebox-${PV}.config ${S}/.config
 	else
 		bbwarn "${WORKDIR}"
 		bbwarn "No defconfig given"
@@ -46,7 +49,14 @@ do_compile () {
 		                ${B}/.config; \
 
 	fi
+	if [ -d ${WORKDIR}/minienv/ ]; then \
+		mkdir -p ${S}/.yocto-defaultenv
+		cp -r ${WORKDIR}/minienv/* ${S}/.yocto-defaultenv/; \
+		grep -q .yocto-defaultenv ${B}/.config || \
+	        sed -i -e "s,^\(CONFIG_DEFAULT_ENVIRONMENT_PATH=.*\)\"$,\1 .yocto-defaultenv\"," \
+		                ${B}/.config; \
 
+	fi
 	# Barebox uses pkg-config only for building native tools
 	export PKG_CONFIG_LIBDIR="${STAGING_DIR_NATIVE}${libdir}/pkgconfig:${STAGING_DIR_NATIVE}/usr/share/pkgconfig"
 	export PKG_CONFIG_SYSROOT_DIR=
