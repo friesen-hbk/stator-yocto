@@ -1,0 +1,6 @@
+#!/bin/sh
+if [ -z $nv.user ]; then
+	echo "please set user (tftp dir) in settings"
+	exit
+fi
+update_preloader $nv.user

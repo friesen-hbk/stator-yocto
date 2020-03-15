@@ -10,7 +10,7 @@ PV="2019.11.0"
 COMPATIBLE_MACHINE_ngt-board = "ngt-board"
 
 
-SRC_URI += "file://barebox.config.${PV}"
+SRC_URI += "file://barebox-xload.config.${PV}"
 
 
 SRC_URI += "file://0001-ARM-add-fncpy.h-from-linux-v4.6.patch"

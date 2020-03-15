@@ -1,0 +1,1 @@
+default boot source (possible values: auto,nand0,nand1,nfs,tftp)

@@ -1,0 +1,11 @@
+#!/bin/sh
+
+if [ "$1" = menu ]; then
+        init-menu-add-entry "$0" "Automountpoints"
+        exit
+fi
+
+mkdir -p /mnt/tftp
+automount /mnt/tftp 'ifup eth0 && mount -t tftp $eth0.serverip /mnt/tftp'
+automount -d /mnt/mmc0.1 'detect mmc0 && [ -e /dev/mmc0.1 ] && mount /dev/mmc0.1 /mnt/mmc0.1'
+automount -d /mnt/mmc0.2 'detect mmc0 && [ -e /dev/mmc0.2 ] && mount /dev/mmc0.2 /mnt/mmc0.2'

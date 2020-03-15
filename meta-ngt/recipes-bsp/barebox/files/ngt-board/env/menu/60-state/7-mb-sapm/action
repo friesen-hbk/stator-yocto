@@ -1,0 +1,7 @@
+#!/bin/sh
+readline "Please enter material sap identifier:(${motherboard.sapm}):" sap
+if [ ! -z ${sap} ]; then
+	echo "setting sapm to:${sap}"
+	motherboard.sapm=${sap}
+	state -s motherboard
+fi

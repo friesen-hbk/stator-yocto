@@ -1,0 +1,15 @@
+#!/bin/sh
+if [ -z $1 ]; then
+        echo "update_preloader <tftp_dir>"
+        exit
+fi
+if [ -z $global.dhcp.tftp_server_name ]; then
+        dhcp
+fi
+echo downloading bootloader
+tftp $1/barebox-xload-image /barebox-xload
+if [ -f /barebox-xload ]; then
+        echo writing bootloader
+        barebox_update -t qspi-xload -y /barebox-xload
+        rm /barebox-xload
+fi

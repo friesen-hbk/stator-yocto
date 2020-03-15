@@ -1,0 +1,4 @@
+#!/bin/sh
+bootsrc=0
+global linux.bootargs.all="ubi.mtd=0 root=ubi0:root$bootsrc rootfstype=ubifs "
+boot /mnt/nand${bootsrc}

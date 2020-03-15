@@ -1,0 +1,7 @@
+#!/bin/sh
+readline "Please enter motherboard bottom barcode identifier (${motherboard.bcu}):" bcu
+if [ ! -z ${bcu} ]; then
+	echo "setting bcu to:${bcu}"
+	motherboard.bcu=${bcu}
+	state -s motherboard
+fi

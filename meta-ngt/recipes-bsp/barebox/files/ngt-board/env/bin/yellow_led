@@ -1,0 +1,5 @@
+#!/bin/sh
+
+led 0 0 #red
+led 1 0 #green
+

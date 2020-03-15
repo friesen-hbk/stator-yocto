@@ -1,0 +1,7 @@
+#!/bin/sh
+readline "Please enter motherboard order sap identifier (${motherboard.sapa}):" sap
+if [ ! -z ${sap} ]; then
+	echo "setting sapa to: ${sap}"
+	motherboard.sapa=${sap}
+	state -s motherboard
+fi

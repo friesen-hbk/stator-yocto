@@ -1,0 +1,3 @@
+#!/bin/sh
+firmwareload /mnt/mmc0.2/lib/firmware/soc_system.rbf
+/env/bin/enable_bridges

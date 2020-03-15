@@ -1,0 +1,7 @@
+#!/bin/sh
+readline "Please enter motherboard type (${motherboard.typ}) :" typ
+if [ ! -z ${typ} ]; then
+	echo "setting typ to: ${typ}"
+	motherboard.typ=${typ}
+	state -s motherboard
+fi

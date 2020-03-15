@@ -1,0 +1,9 @@
+#!/bin/sh
+readf /dev/eeprom0.bootsrc bootnr
+if [ $bootnr -eq '0' ]; then
+        mw -d /dev/eeprom0.bootsrc -b 0 49
+        echo "nand1"
+else
+        mw -d /dev/eeprom0.bootsrc -b 0 48
+        echo "nand0"
+fi

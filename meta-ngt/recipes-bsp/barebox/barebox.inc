@@ -27,12 +27,11 @@ EXTRA_OEMAKE = "CROSS_COMPILE=${TARGET_PREFIX}"
 
 
 do_configure() {
-	if [ -e ${WORKDIR}/barebox-${PV}.config ]; then
-		bbnote "${WORKDIR}"
-		cp ${WORKDIR}/barebox-${PV}.config ${S}/.config
+	if [ -e ${WORKDIR}/barebox.config.${PV} ]; then
+		cp ${WORKDIR}/barebox.config.${PV} ${S}/.config
 	else
 		bbwarn "${WORKDIR}"
-		bbwarn "No defconfig given"
+		bbwarn "No barebox.config.${PV} given"
 	fi
 
 	cml1_do_configure

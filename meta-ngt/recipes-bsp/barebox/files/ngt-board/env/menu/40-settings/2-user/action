@@ -1,0 +1,3 @@
+#!/bin/sh
+edit /env/nv/user
+saveenv
