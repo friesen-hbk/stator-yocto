@@ -31,7 +31,7 @@ get-ngt:
   script:
     - ./bootstrap-yocto
     - source setup-environment build-ngt
-    - bitbake flash --runall=fetch
+    - bitbake ubifsimage --runall=fetch
   tags:
     - docker
 
@@ -58,8 +58,8 @@ build-ngt:
   script:
     - ./bootstrap-yocto
     - source setup-environment build-ngt
-    - bitbake flash -c populate_sdk
-    - bitbake flash
+    - bitbake ubifsimage -c populate_sdk
+    - bitbake ubifsimage
   tags:
     - docker
 

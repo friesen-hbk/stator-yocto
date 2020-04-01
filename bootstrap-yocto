@@ -90,7 +90,7 @@ bootstrap()
     test -e downloads/openembedded-core-zeus.tgz || wget http://git.openembedded.org/openembedded-core/snapshot/openembedded-core-2019-10.1-zeus.tar.gz -O downloads/openembedded-core-zeus.tgz
 
     test -e external/openembedded-core-2019-10.1-zeus || tar -xf downloads/openembedded-core-zeus.tgz -C external
-    test -e external/openembedded-core	|| ln -fs openembedded-core-2019-10.1-zeus external/openembedded-core
+    test -e external/openembedded-core || ln -fs openembedded-core-2019-10.1-zeus external/openembedded-core
 
     echo "Install bitbake"
     test -e downloads/bitbake.tgz || wget https://github.com/openembedded/bitbake/archive/1.44.1.tar.gz -O downloads/bitbake.tgz
@@ -145,15 +145,15 @@ echo -e "
     To build card firmware for QEMU:
         MACHINE=qemu source setup-environment build-ngt-qemu
         bitbake hdimage
-		bitbake hbg
+        bitbake hbg
 
     To build card firmware for the NGT board:
-        MACHINE=ngt source setup-environment build-ngt
+        MACHINE=ngt-board source setup-environment build-ngt
         bitbake flash
-		bitbake hbg
-		
+        bitbake hbg
+
     To build frame firmware for the Atlas-Board:
-        MACHINE=atlas source setup-environment build-atlas
+        MACHINE=atlas-board source setup-environment build-atlas
         bitbake sdimage
 "
 
