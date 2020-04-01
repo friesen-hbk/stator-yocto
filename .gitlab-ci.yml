@@ -58,6 +58,7 @@ build-ngt:
   script:
     - ./bootstrap-yocto
     - source setup-environment build-ngt
+    - bitbake flash -c populate_sdk
     - bitbake flash
   tags:
     - docker
