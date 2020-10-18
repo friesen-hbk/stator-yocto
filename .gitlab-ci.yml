@@ -31,7 +31,7 @@ get-ngt:
   script:
     - ./bootstrap-yocto
     - source setup-environment build-ngt
-    - bitbake ubifsimage --runall=fetch
+    - bitbake ubifs-image --runall=fetch
   tags:
     - docker
 
@@ -43,7 +43,7 @@ get-atlas:
     - env
     - ./bootstrap-yocto
     - source setup-environment build-atlas
-    - bitbake sdimage --runall=fetch
+    - bitbake sd-image --runall=fetch
   tags:
     - docker
 
@@ -58,8 +58,8 @@ build-ngt:
   script:
     - ./bootstrap-yocto
     - source setup-environment build-ngt
-    - bitbake ubifsimage -c populate_sdk
-    - bitbake ubifsimage
+    - bitbake ubifs-image -c populate_sdk
+    - bitbake ubifs-image
   tags:
     - docker
 
@@ -71,6 +71,6 @@ build-atlas:
     - env
     - ./bootstrap-yocto
     - source setup-environment build-atlas
-    - bitbake sdimage
+    - bitbake sd-image
   tags:
     - docker
