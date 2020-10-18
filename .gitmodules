@@ -1,3 +1,16 @@
 [submodule "external/meta-barebox"]
 	path = external/meta-barebox
 	url = https://github.com/menschel-d/meta-barebox.git
+	branch = "dunfell"
+[submodule "external/openembedded-core"]
+	path = external/openembedded-core
+	url = https://github.com/openembedded/openembedded-core
+	branch = "dunfell"
+[submodule "external/bitbake"]
+	path = external/bitbake
+	url = https://github.com/openembedded/bitbake
+	branch = "1.46"
+[submodule "external/meta-openembedded"]
+	path = external/meta-openembedded
+	url = https://github.com/openembedded/meta-openembedded
+	branch = "dunfell"
