@@ -35,17 +35,17 @@ get-ngt:
   tags:
     - docker
 
-get-atlas:
-  stage: get
-  variables:
-    MACHINE: atlas-board
-  script:
-    - env
-    - ./bootstrap-yocto
-    - source setup-environment build-atlas
-    - bitbake sd-image --runall=fetch
-  tags:
-    - docker
+#get-atlas:
+#  stage: get
+#  variables:
+#    MACHINE: atlas-board
+#  script:
+#    - env
+#    - ./bootstrap-yocto
+#    - source setup-environment build-atlas
+#    - bitbake sd-image --runall=fetch
+#  tags:
+#    - docker
 
 #######
 # BUILD
@@ -63,14 +63,58 @@ build-ngt:
   tags:
     - docker
 
-build-atlas:
-  stage: build
-  variables:
-    MACHINE: atlas-board
+#build-atlas:
+#  stage: build
+#  variables:
+#    MACHINE: atlas-board
+#  script:
+#    - env
+#    - ./bootstrap-yocto
+#    - source setup-environment build-atlas
+#    - bitbake sd-image
+#  tags:
+#    - docker
+
+
+#######
+# SCHEDULED BUILDS
+#######
+
+### REMOVE STATE/IMAGE CACHES
+### REMOVE STATE/IMAGE CACHES
+clean:
+  stage: clean
+  only:
+    - schedules
   script:
-    - env
-    - ./bootstrap-yocto
-    - source setup-environment build-atlas
-    - bitbake sd-image
+    - sudo rm -fr /share/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/build-*
+    - sudo rm -fr /share/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/firmware-*
   tags:
     - docker
+
+firmware-ngt:
+  stage: build
+  only:
+    - schedules
+  variables:
+    MACHINE: ngt-board
+  script:
+    - ./bootstrap-yocto
+    - source setup-environment build-ngt
+    - bitbake ubifs-image -c populate_sdk
+    - bitbake ubifs-image
+  tags:
+    - docker
+
+#firmware-atlas:
+#  stage: build
+#  only:
+#    - schedules
+#  variables:
+#    MACHINE: atlas-board
+#  script:
+#    - ./bootstrap-yocto
+#    - source setup-environment build-atlas
+#    - bitbake sd-image
+#  tags:
+#    - docker
