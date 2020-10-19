@@ -13,13 +13,14 @@ variables:
 before_script:
   - sudo mkdir -p ${SSTATE_DIR}
   - sudo chown buildbot:buildbot ${SSTATE_DIR}
-  - sudo mkdir -p /downloads/yocto
-  - sudo chown buildbot:buildbot /downloads/yocto
+  - sudo mkdir -p ${DL_DIR}
+  - sudo chown buildbot:buildbot ${DL_DIR}
 
 stages:
   - clean
   - get
   - build
+  - deploy
 
 ######
 # GET
@@ -56,14 +57,14 @@ get-ngt:
 
 build-ngt:
   stage: build
+  except:
+    - tags
+    - schedules
   variables:
     MACHINE: ngt-board
-    BB_ENV_EXTRAWHITE: "$BB_ENV_EXTRAWHITE DL_DIR"
-    DL_DIR: /downloads/yocto
   script:
     - ./bootstrap-yocto
     - source setup-environment build-ngt
-    - bitbake ubifs-image -c populate_sdk
     - bitbake ubifs-image
   after_script:
     - echo "Deploy to http://berta.devel.hbm.com/gitlab-runner/share/${DEPLOY_DIR}/${CI_BUILD_ID}/deploy"
@@ -108,13 +109,11 @@ firmware-ngt:
     - schedules
   variables:
     MACHINE: ngt-board
-    BB_ENV_EXTRAWHITE: "$BB_ENV_EXTRAWHITE DL_DIR"
-    DL_DIR: /downloads/yocto
   script:
     - ./bootstrap-yocto
     - source setup-environment build-ngt
-    - bitbake ubifs-image -c populate_sdk
     - bitbake ubifs-image
+    - bitbake ubifs-image -c populate_sdk
   after_script:
     - echo "Deploy to http://berta.devel.hbm.com/gitlab-runner/share/${DEPLOY_DIR}/deploy"
     - echo "Deploy to http://localhost:8888/gitlab-runner/share/${DEPLOY_DIR}/deploy "
@@ -135,3 +134,44 @@ firmware-ngt:
 #    - bitbake sd-image
 #  tags:
 #    - docker
+
+
+##### MANUAL NUILD
+
+manual-ngt:
+  stage: build
+  when: manual
+  variables:
+    MACHINE: ngt-board
+  script:
+    - ./bootstrap-yocto
+    - source setup-environment build-ngt
+    - bitbake ubifs-image
+    - bitbake ubifs-image -c populate_sdk
+  after_script:
+    - echo "Deploy to http://berta.devel.hbm.com/gitlab-runner/share/${DEPLOY_DIR}/deploy"
+    - echo "Deploy to http://localhost:8888/gitlab-runner/share/${DEPLOY_DIR}/deploy "
+    - sudo mkdir -p /share/${DEPLOY_DIR}/deploy
+    - sudo cp -rP build-ngt/tmp/deploy/* /share/${DEPLOY_DIR}/deploy/
+  tags:
+    - docker
+
+
+release-ngt:
+  stage: deploy
+  only:
+    - tags
+  variables:
+    MACHINE: ngt-board
+  script:
+    - ./bootstrap-yocto
+    - source setup-environment build-ngt
+    - bitbake ubifs-image
+    - bitbake ubifs-image -c populate_sdk
+  after_script:
+    - echo "Deploy to http://berta.devel.hbm.com/gitlab-runner/share/${DEPLOY_DIR}/deploy"
+    - echo "Deploy to http://localhost:8888/gitlab-runner/share/${DEPLOY_DIR}/deploy "
+    - sudo mkdir -p /share/${DEPLOY_DIR}/deploy
+    - sudo cp -rP build-ngt/tmp/deploy/* /share/${DEPLOY_DIR}/deploy/
+  tags:
+    - docker
