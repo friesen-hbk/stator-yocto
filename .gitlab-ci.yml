@@ -8,11 +8,11 @@ variables:
   SSTATE_DIR: /share/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/build-sstate-cache
   SSTATE_MIRRORS: " file://.* file:///share/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/build-sstate-cache/PATH "
   DL_DIR: /downloads/yocto
-
+  DEPLOY_DIR:  "${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/${CI_BUILD_NAME}/${CI_COMMIT_REF_NAME}"
 
 before_script:
-  - sudo mkdir -p /share/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/build-sstate-cache
-  - sudo chown buildbot:buildbot /share/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/build-sstate-cache
+  - sudo mkdir -p ${SSTATE_DIR}
+  - sudo chown buildbot:buildbot ${SSTATE_DIR}
   - sudo mkdir -p /downloads/yocto
   - sudo chown buildbot:buildbot /downloads/yocto
 
@@ -29,6 +29,8 @@ get-ngt:
   stage: get
   variables:
     MACHINE: ngt-board
+    BB_ENV_EXTRAWHITE: "$BB_ENV_EXTRAWHITE DL_DIR"
+    DL_DIR: /downloads/yocto
   script:
     - ./bootstrap-yocto
     - source setup-environment build-ngt
@@ -56,13 +58,25 @@ build-ngt:
   stage: build
   variables:
     MACHINE: ngt-board
+    BB_ENV_EXTRAWHITE: "$BB_ENV_EXTRAWHITE DL_DIR"
+    DL_DIR: /downloads/yocto
   script:
     - ./bootstrap-yocto
     - source setup-environment build-ngt
     - bitbake ubifs-image -c populate_sdk
     - bitbake ubifs-image
+  after_script:
+    - echo "Deploy to http://berta.devel.hbm.com/gitlab-runner/share/${DEPLOY_DIR}/${CI_BUILD_ID}/deploy"
+    - echo "Deploy to http://localhost:8888/gitlab-runner/share/${DEPLOY_DIR}/${CI_BUILD_ID}/deploy "
+    - sudo mkdir -p /share/${DEPLOY_DIR}/${CI_BUILD_ID}/deploy
+    - sudo cp -rP build-ngt/tmp/deploy/* /share/${DEPLOY_DIR}/${CI_BUILD_ID}/deploy/
   tags:
     - docker
+
+  tags:
+    - docker
+
+
 
 #build-atlas:
 #  stage: build
@@ -98,11 +112,18 @@ firmware-ngt:
     - schedules
   variables:
     MACHINE: ngt-board
+    BB_ENV_EXTRAWHITE: "$BB_ENV_EXTRAWHITE DL_DIR"
+    DL_DIR: /downloads/yocto
   script:
     - ./bootstrap-yocto
     - source setup-environment build-ngt
     - bitbake ubifs-image -c populate_sdk
     - bitbake ubifs-image
+  after_script:
+    - echo "Deploy to http://berta.devel.hbm.com/gitlab-runner/share/${DEPLOY_DIR}/deploy"
+    - echo "Deploy to http://localhost:8888/gitlab-runner/share/${DEPLOY_DIR}/deploy "
+    - sudo mkdir -p /share/${DEPLOY_DIR}/deploy
+    - sudo cp -rP build-ngt/tmp/deploy/* /share/${DEPLOY_DIR}/deploy/
   tags:
     - docker
 
