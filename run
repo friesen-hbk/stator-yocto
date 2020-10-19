@@ -1,0 +1,6 @@
+#!/bin/sh
+
+#docker run -it --rm -v ~/:/home/$(id -un) next-fw-pc:latest
+docker run -it --rm -v ~/dev/ngt/stator-yocto:/buildbot --network host --add-host gitlab.hbm.com:172.19.169.22 gitlab.hbm.com:5555/docker/yocto:v1
+
+

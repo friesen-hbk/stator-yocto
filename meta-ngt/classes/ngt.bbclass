@@ -1,4 +1,4 @@
-DESCRIPTION = "A base for HBK images"
+DESCRIPTION = "A base for NGT images"
 LICENSE = "MIT"
 
 IMAGE_FEATURES += "\
