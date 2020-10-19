@@ -1,83 +1,49 @@
 # Overview
 
-This is the Yocto manifest and configuration file to create a build environment for the HBK NExT BSP.
+This is the main repository for the HBK NGT BSP.
 
-## Getting Started
+The BSP provides a toolchain, emulator images, and firmware for NExT cards and frames.
 
-You will need git-lfs to pull code from HBK Gitlab. To install git-lfs:
+# Getting Started
 
-    $ sudo apt install git-lfs
+The BSP is based on Yocto 3.1.2 (Dunfell).
 
-To set up the Yocto BSP, run:
+Ubuntu 20.04 is recommended for developer machines. Note Ubuntu 18.04 is no longer supported. For those preferring a
+Windows environment, Windows Subsystem for Linux v2 should work too.
 
-	$ git archive --remote=ssh://git@gitlab.hbm.com/next/firmware/next-manifest.git HEAD bootstrap-yocto | tar -x
+The following packages are required:
 
-	$ ./bootstrap-yocto
+``` shell
+$ sudo apt install gawk wget git-core diffstat unzip texinfo gcc-multilib \
+      build-essential chrpath socat cpio python python3 python3-pip \
+      python3-pexpect xz-utils debianutils iputils-ping python3-git \
+      python3-jinja2 libegl1-mesa libsdl1.2-dev pylint3 xterm \
+      libncurses-dev libtinfo5
+```
 
-This will download all required files and prepare the Yocto build environment.
+To set up the BSP:
 
-## Building Code
+``` shell
+$ git clone git@gitlab.hbm.com:next/next-firmware.git --recurse-submodules -j$(nproc)
+$ cd next-firmware
+$ ./bootstrap-yocto
+```
 
-To start building, open a new shell and `cd` to the 'next' folder, e.g.:
+## devtool issue
 
-	$ cd next
+There is an issue running devtool on certain recipes, for instance:
 
-Then, configure the environment and start building.
+``` shell
+$ devtool modify u-boot-xlnx
 
-This step depends on the target you are building for, here's a few examples.
+(...skip stack trace...)
 
-To build card firmware for QEMU:
+Exception: ModuleNotFoundError: No module named '_sysconfigdata'
+```
 
-	MACHINE=qemu . base/setup-environment build-card-qemu
-	bitbake hbk-card
+A possible workaround, should you run into this problem on your machine:
 
-To build card firmware for the ESPRESSObin eval board:
-
-	$ MACHINE=hbk-card-g1 . base/setup-environment build-card-eval
-	$ bitbake hbk-card
-
-To build frame firmware for QEMU:
-
-	MACHINE=qemu . base/setup-environment build-frame-qemu
-	bitbake hbk-frame
-
-To build frame firmware for the MACCHIATObin eval board:
-
-	$ MACHINE=hbk-frame-g1 . base/setup-environment build-frame-eval
-	$ bitbake hbk-frame
-
-Sourcing the `setup-environment` script sets up the environment for the specified `MACHINE`.
-
-The build/output folder is specified on the command line as a parameter to `setup-environment`. It is possible to use a common `build` folder for all targets, but things might break if different configurations use different `MACHINE_FEATURES` or `DISTRO_FEATURES`.
-
-The build is started by invoking `bitbake` with the name of the recipe that builds the target firmware.
-
-## Modifying Code
-
-Use [devtool](https://www.yoctoproject.org/software-item/devtool/) for anything related to recipes, including adding, modifying and upgrading recipes.
-
-To modify the kernel, add patches to the `internal/meta-hbk` layer (`devtool` is your friend). Use kernel modules for device drivers.
-
-Likewise, to modify the bootloader use patches in `internal/meta-hbk`.
-
-## user.conf
-
-Bitbake will look for a `user.conf` file in the top BSP folder (it's included from `local.conf`).
-
-If you would like to customise the build, simply create this file and adjust things as desired.
-
-For instance, to use 6 CPU cores for building instead if the default 4, `user.conf` might contain:
-
-	BB_NUMBER_THREADS = "6"
-	BB_NUMBER_PARSE_THREADS = "6"
-
-A local sstate_cache folder can speed up builds significantly. To set up sstate cache in next/build-sstate-cache, use:
-
-	SSTATE_DIR = "${BSPDIR}/build-sstate-cache"
-	SSTATE_MIRRORS_prepend = "file://.* file://${BSPDIR}/build-sstate-cache/PATH "
-
-The `SSTATE_DIR` variable tells Bitbake to store newly generated sstate information in the `build-sstate-cache` folder, while the `SSTATE_MIRRORS`variable instructs Bitbake to look here first for already generated sstate.
-
-## Implementation Notes
-
-We use the latest long-term release [linux-yocto kernel](https://git.yoctoproject.org/cgit/cgit.cgi/linux-yocto/) provided by the Yocto project. Yocto kernels are stable and based on the mainline Linux kernel releases from [www.kernel.org](https://www.kernel.org).
+``` shell
+cd /usr/lib/python3.8
+sudo ln -s _sysconfigdata__x86_64-linux-gnu.py _sysconfigdata.py
+```

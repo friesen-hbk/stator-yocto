@@ -14,7 +14,7 @@ inside the container is /buildbot. We change this behaviour and
 overwrite it with our settings from local machine.
 
 ``` shell
-docker run -v /home/faix:/buildbot -t -i gitlab.hbm.com:5555/docker/next bash
+docker run -v /home/faix:/buildbot -t -i gitlab.hbm.com:5555/docker/yocot:v1 bash
 ```
 
 ``` shell

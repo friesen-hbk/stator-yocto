@@ -73,10 +73,6 @@ build-ngt:
   tags:
     - docker
 
-  tags:
-    - docker
-
-
 
 #build-atlas:
 #  stage: build
