@@ -17,6 +17,7 @@ before_script:
   - sudo chown buildbot:buildbot /downloads/yocto
 
 stages:
+  - clean
   - get
   - build
 
@@ -80,7 +81,6 @@ build-ngt:
 # SCHEDULED BUILDS
 #######
 
-### REMOVE STATE/IMAGE CACHES
 ### REMOVE STATE/IMAGE CACHES
 clean:
   stage: clean
