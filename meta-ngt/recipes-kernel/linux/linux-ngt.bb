@@ -5,8 +5,14 @@ require recipes-kernel/linux/linux-yocto.inc
 KBRANCH = "linux-5.4.y"
 SRC_URI = "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git;protocol=git;nocheckout=1;branch=${KBRANCH} \
            file://defconfig \
-		   file://0001-Revert-net-stmmac-platform-Fix-MDIO-init-for-platfor.patch \
 		   file://patch-5.4.10-rt5.patch \
+		   file://0001_mtd.patch \
+		   file://0002_mtd.patch \
+		   file://0003_mtd.patch \
+		   file://0004_mtd.patch \
+		   file://0005_mtd.patch \
+		   file://0006-denali-hack-overwrite-setup-values.patch \
+		   file://0001-scripts-dtc-Remove-redundant-YYLOC-global-declaratio.patch \
            "
 
 LIC_FILES_CHKSUM  = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"

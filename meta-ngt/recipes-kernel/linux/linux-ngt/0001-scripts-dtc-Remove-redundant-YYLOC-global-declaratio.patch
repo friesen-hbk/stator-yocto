@@ -1,0 +1,25 @@
+From 7f152e657a07fad0ec9f0a18256a13e44c56adbe Mon Sep 17 00:00:00 2001
+From: Andreas Friesen <andreas.friesen@hbkworld.com>
+Date: Tue, 20 Oct 2020 13:44:05 +0200
+Subject: [PATCH] scripts/dtc: Remove redundant YYLOC global declaration
+
+---
+ scripts/dtc/dtc-lexer.l | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/scripts/dtc/dtc-lexer.l b/scripts/dtc/dtc-lexer.l
+index 5c6c3fd557d7..b4d686c89c9b 100644
+--- a/scripts/dtc/dtc-lexer.l
++++ b/scripts/dtc/dtc-lexer.l
+@@ -23,7 +23,7 @@ LINECOMMENT	"//".*\n
+ #include "srcpos.h"
+ #include "dtc-parser.tab.h"
+ 
+-YYLTYPE yylloc;
++// extern YYLTYPE yylloc;
+ extern bool treesource_error;
+ 
+ /* CAUTION: this will stop working if we ever use yyless() or yyunput() */
+-- 
+2.28.0
+

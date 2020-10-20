@@ -1,0 +1,41 @@
+From a15877ed501cb7418d23b4131b5036c32aa54bd0 Mon Sep 17 00:00:00 2001
+From: unknown author <unknown.author@example.com>
+Date: Thu, 9 Jan 2020 14:51:41 +0100
+Subject: [PATCH 1/5] 0001_mtd
+
+denali->ecc_caps is a mandatory parameter. If it were left unset,
+nand_ecc_choose_conf() would end up with NULL pointer access.
+
+So, every compatible must be associated with proper denali_dt_data.
+If of_device_get_match_data() returns NULL, let it fail immediately.
+
+Signed-off-by: Masahiro Yamada <yamada.masahiro at socionext.com>
+---
+ drivers/mtd/nand/raw/denali_dt.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/mtd/nand/raw/denali_dt.c b/drivers/mtd/nand/raw/denali_dt.c
+index 5e14836f6bd5..ca705f4d2579 100644
+--- a/drivers/mtd/nand/raw/denali_dt.c
++++ b/drivers/mtd/nand/raw/denali_dt.c
+@@ -159,11 +159,12 @@ static int denali_dt_probe(struct platform_device *pdev)
+ 	denali = &dt->controller;
+ 
+ 	data = of_device_get_match_data(dev);
+-	if (data) {
+-		denali->revision = data->revision;
+-		denali->caps = data->caps;
+-		denali->ecc_caps = data->ecc_caps;
+-	}
++	if (WARN_ON(!data))
++		return -EINVAL;
++
++	denali->revision = data->revision;
++	denali->caps = data->caps;
++	denali->ecc_caps = data->ecc_caps;
+ 
+ 	denali->dev = dev;
+ 	denali->irq = platform_get_irq(pdev, 0);
+-- 
+2.20.1
+

@@ -1,0 +1,108 @@
+From 15042373a94438d6e90401a73913b634cea04711 Mon Sep 17 00:00:00 2001
+From: Marek Vasut <marex at denx.de>
+Date: Thu, 9 Jan 2020 14:51:41 +0100
+Subject: [PATCH 2/5] 0002_mtd
+
+The SPARE_AREA_SKIP_BYTES register is reset when the controller reset
+signal is toggled. Yet, this register must be configured to match the
+content of the NAND OOB area. The current default value is always set
+to 8 and is programmed into the hardware in case the hardware was not
+programmed before (e.g. in a bootloader) with a different value. This
+however does not work when the block is reset properly by Linux.
+
+On Altera SoCFPGA CycloneV, ArriaV and Arria10, which are the SoCFPGA
+platforms which support booting from NAND, the SPARE_AREA_SKIP_BYTES
+value must be set to 2. On Socionext Uniphier, the value is 8. This
+patch adds support for preconfiguring the default value and handles
+the special SoCFPGA case by setting the default to 2 on all SoCFPGA
+platforms, while retaining the original behavior and default value of
+8 on all the other platforms.
+
+Signed-off-by: Marek Vasut <marex at denx.de>
+Cc: Miquel Raynal <miquel.raynal at bootlin.com>
+Cc: Richard Weinberger <richard at nod.at>
+Cc: Vignesh Raghavendra <vigneshr at ti.com>
+To: linux-mtd at lists.infradead.org
+Reviewed-by: Tudor Ambarus <tudor.ambarus at microchip.com>
+Acked-by: Masahiro Yamada <yamada.masahiro at socionext.com>
+---
+ drivers/mtd/nand/raw/denali.c    | 13 ++++++++++---
+ drivers/mtd/nand/raw/denali_dt.c |  5 +++++
+ 2 files changed, 15 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/mtd/nand/raw/denali.c b/drivers/mtd/nand/raw/denali.c
+index 3102ddbd8abd..b6c463d02167 100644
+--- a/drivers/mtd/nand/raw/denali.c
++++ b/drivers/mtd/nand/raw/denali.c
+@@ -1302,14 +1302,21 @@ int denali_init(struct denali_controller *denali)
+ 
+ 	/*
+ 	 * Set how many bytes should be skipped before writing data in OOB.
++	 * If a non-zero value has already been configured, update it in HW.
+ 	 * If a non-zero value has already been set (by firmware or something),
+ 	 * just use it. Otherwise, set the driver's default.
+ 	 */
+-	denali->oob_skip_bytes = ioread32(denali->reg + SPARE_AREA_SKIP_BYTES);
+-	if (!denali->oob_skip_bytes) {
+-		denali->oob_skip_bytes = DENALI_DEFAULT_OOB_SKIP_BYTES;
++	if (denali->oob_skip_bytes) {
+ 		iowrite32(denali->oob_skip_bytes,
+ 			  denali->reg + SPARE_AREA_SKIP_BYTES);
++	} else {
++		denali->oob_skip_bytes =
++			ioread32(denali->reg + SPARE_AREA_SKIP_BYTES);
++		if (!denali->oob_skip_bytes) {
++			denali->oob_skip_bytes = DENALI_DEFAULT_OOB_SKIP_BYTES;
++			iowrite32(denali->oob_skip_bytes,
++				  denali->reg + SPARE_AREA_SKIP_BYTES);
++		}
+ 	}
+ 
+ 	iowrite32(0, denali->reg + TRANSFER_SPARE_REG);
+diff --git a/drivers/mtd/nand/raw/denali_dt.c b/drivers/mtd/nand/raw/denali_dt.c
+index ca705f4d2579..3166491b13eb 100644
+--- a/drivers/mtd/nand/raw/denali_dt.c
++++ b/drivers/mtd/nand/raw/denali_dt.c
+@@ -27,6 +27,7 @@ struct denali_dt {
+ struct denali_dt_data {
+ 	unsigned int revision;
+ 	unsigned int caps;
++	unsigned int oob_skip_bytes;
+ 	const struct nand_ecc_caps *ecc_caps;
+ };
+ 
+@@ -34,6 +35,7 @@ NAND_ECC_CAPS_SINGLE(denali_socfpga_ecc_caps, denali_calc_ecc_bytes,
+ 		     512, 8, 15);
+ static const struct denali_dt_data denali_socfpga_data = {
+ 	.caps = DENALI_CAP_HW_ECC_FIXUP,
++	.oob_skip_bytes = 2,
+ 	.ecc_caps = &denali_socfpga_ecc_caps,
+ };
+ 
+@@ -42,6 +44,7 @@ NAND_ECC_CAPS_SINGLE(denali_uniphier_v5a_ecc_caps, denali_calc_ecc_bytes,
+ static const struct denali_dt_data denali_uniphier_v5a_data = {
+ 	.caps = DENALI_CAP_HW_ECC_FIXUP |
+ 		DENALI_CAP_DMA_64BIT,
++	.oob_skip_bytes = 8,
+ 	.ecc_caps = &denali_uniphier_v5a_ecc_caps,
+ };
+ 
+@@ -51,6 +54,7 @@ static const struct denali_dt_data denali_uniphier_v5b_data = {
+ 	.revision = 0x0501,
+ 	.caps = DENALI_CAP_HW_ECC_FIXUP |
+ 		DENALI_CAP_DMA_64BIT,
++	.oob_skip_bytes = 8,
+ 	.ecc_caps = &denali_uniphier_v5b_ecc_caps,
+ };
+ 
+@@ -164,6 +168,7 @@ static int denali_dt_probe(struct platform_device *pdev)
+ 
+ 	denali->revision = data->revision;
+ 	denali->caps = data->caps;
++	denali->oob_skip_bytes = data->oob_skip_bytes;
+ 	denali->ecc_caps = data->ecc_caps;
+ 
+ 	denali->dev = dev;
+-- 
+2.20.1
+

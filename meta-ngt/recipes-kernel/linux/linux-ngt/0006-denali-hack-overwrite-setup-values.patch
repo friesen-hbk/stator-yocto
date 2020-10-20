@@ -1,0 +1,32 @@
+From df35a4fb48d7963c2e88433fe0ed4893791e1f87 Mon Sep 17 00:00:00 2001
+From: Tim Sander <tim.sander@hbm.com>
+Date: Mon, 9 Sep 2019 10:18:31 +0200
+Subject: [PATCH 2/2] denali: hack: overwrite setup values
+
+---
+ drivers/mtd/nand/raw/denali.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/drivers/mtd/nand/raw/denali.c b/drivers/mtd/nand/raw/denali.c
+index 5bfaa3863dbb..7b8bc9920f17 100644
+--- a/drivers/mtd/nand/raw/denali.c
++++ b/drivers/mtd/nand/raw/denali.c
+@@ -887,6 +887,15 @@ static int denali_setup_data_interface(struct nand_chip *chip, int chipnr,
+ 	tmp |= FIELD_PREP(CS_SETUP_CNT__VALUE, cs_setup);
+ 	sel->cs_setup_cnt = tmp;
+ 
++	sel->acc_clks = 0x4;
++	sel->re_2_re = 0x14;
++	sel->re_2_we = 0x14;
++	sel->tcwaw_and_addr_2_data = 0x3f;
++	sel->hwhr2_and_we_2_re = 0x14;
++	sel->rdwr_en_hi_cnt = 2;
++	sel->rdwr_en_lo_cnt = 4;
++	sel->cs_setup_cnt = 1;
++
+ 	return 0;
+ }
+ 
+-- 
+2.20.1
+
