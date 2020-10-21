@@ -1,5 +1,0 @@
-#!/bin/sh
-
-. /env/data/ansi-colors
-
-menutree

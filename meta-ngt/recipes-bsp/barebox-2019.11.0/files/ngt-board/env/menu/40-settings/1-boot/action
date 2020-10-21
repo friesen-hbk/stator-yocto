@@ -1,3 +1,0 @@
-#!/bin/sh
-edit /env/nv/boot.default
-saveenv

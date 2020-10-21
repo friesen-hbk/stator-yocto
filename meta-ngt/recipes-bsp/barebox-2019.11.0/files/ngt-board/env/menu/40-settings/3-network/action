@@ -1,3 +1,0 @@
-#!/bin/sh
-edit /env/network/eth0
-saveenv

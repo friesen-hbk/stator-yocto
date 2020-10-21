@@ -1,5 +1,0 @@
-#!/bin/sh
-mw 0xffd08028 0x0000000c #signals from fpga which interfere with emac enabled
-mw 0xffd0501c 0x00000007 #reset bridges
-mw 0xffd0501c 0x00000000 #reset finished
-mw 0xff800000 0x00000018 #hps bridges visible to l3 masters, 0x0 mapped to sdram

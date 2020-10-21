@@ -1,0 +1,160 @@
+From 9cf6e72ff2d0553553a2a16c585f6b93bb8d1c96 Mon Sep 17 00:00:00 2001
+From: Tim Sander <tim.sander@hbm.com>
+Date: Thu, 1 Feb 2018 11:40:14 +0100
+Subject: [PATCH] hbm_soc: remove offsets from device tree barebox states, they
+ are visible in usermode and incompatible to old version
+
+---
+ arch/arm/dts/socfpga_cyclone5_hbm_soc.dts | 40 +++++++++++------------
+ 1 file changed, 20 insertions(+), 20 deletions(-)
+
+diff --git a/arch/arm/dts/socfpga_cyclone5_hbm_soc.dts b/arch/arm/dts/socfpga_cyclone5_hbm_soc.dts
+index b8c8271..fe0f370 100644
+--- a/arch/arm/dts/socfpga_cyclone5_hbm_soc.dts
++++ b/arch/arm/dts/socfpga_cyclone5_hbm_soc.dts
+@@ -58,37 +58,37 @@
+ 		#size-cells = <1>;
+ 		backend = <&eeprom_state>;
+ 
+-		typ@0 {
++		typ {
+ 			reg = <0x0 0x10>;
+ 			type = "string";
+ 			default = "undef";
+ 		};
+ 
+-		ver@10 {
++		ver {
+ 			reg = <0x10 0x10>;
+ 			type = "string";
+ 			default = "undef";
+ 		};
+ 
+-		bco@20 {
++		bco {
+ 			reg = <0x20 0x10>;
+ 			type = "string";
+ 			default = "undef";
+ 		};
+ 
+-		bcu@30 {
++		bcu {
+ 			reg = <0x30 0x10>;
+ 			type = "string";
+ 			default = "undef";
+ 		};
+ 
+-		sapm@40 {
++		sapm {
+ 			reg = <0x40 0x10>;
+ 			type = "string";
+ 			default = "undef";
+ 		};
+ 
+-		sapa@50 {
++		sapa {
+ 			reg = <0x50 0x10>;
+ 			type = "string";
+ 			default = "undef";
+@@ -138,49 +138,49 @@
+ 		#size-cells = <1>;
+ 		backend = <&mb_eeprom>, "partname:state";
+ 
+-		typ@0 {
++		typ {
+ 			reg = <0x0 0x10>;
+ 			type = "string";
+ 			default = "undef";
+ 		};
+ 
+-		ver@10 {
++		ver {
+ 			reg = <0x10 0x10>;
+ 			type = "string";
+ 			default = "undef";
+ 		};
+ 
+-		bco@20 {
++		bco {
+ 			reg = <0x20 0x10>;
+ 			type = "string";
+ 			default = "undef";
+ 		};
+ 
+-		bcu@30 {
++		bcu {
+ 			reg = <0x30 0x10>;
+ 			type = "string";
+ 			default = "undef";
+ 		};
+ 
+-		sapm@40 {
++		sapm {
+ 			reg = <0x40 0x10>;
+ 			type = "string";
+ 			default = "undef";
+ 		};
+ 
+-		sapa@50 {
++		sapa {
+ 			reg = <0x50 0x10>;
+ 			type = "string";
+ 			default = "undef";
+ 		};
+ 
+-		mac0: mac0@60 {
++		mac0 {
+ 			reg = <0x60 6>;
+ 			type = "mac";
+ 			default = [00 00 00 00 00 00];
+ 		};
+ 
+-		mac1: mac1@66 {
++		mac1 {
+ 			reg = <0x66 6>;
+ 			type = "mac";
+ 			default = [00 00 00 00 00 00];
+@@ -197,37 +197,37 @@
+ 		#size-cells = <1>;
+ 		backend = <&cpu_eeprom>, "partname:state";
+ 
+-		typ@0 {
++		typ {
+ 			reg = <0x0 0x10>;
+ 			type = "string";
+ 			default = "undef";
+ 		};
+ 
+-		ver@10 {
++		ver {
+ 			reg = <0x10 0x10>;
+ 			type = "string";
+ 			default = "undef";
+ 		};
+ 
+-		bco@20 {
++		bco {
+ 			reg = <0x20 0x10>;
+ 			type = "string";
+ 			default = "undef";
+ 		};
+ 
+-		bcu@30 {
++		bcu {
+ 			reg = <0x30 0x10>;
+ 			type = "string";
+ 			default = "undef";
+ 		};
+ 
+-		sapm@40 {
++		sapm {
+ 			reg = <0x40 0x10>;
+ 			type = "string";
+ 			default = "undef";
+ 		};
+ 
+-		sapa@50 {
++		sapa {
+ 			reg = <0x50 0x10>;
+ 			type = "string";
+ 			default = "undef";

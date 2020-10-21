@@ -1,7 +1,0 @@
-#!/bin/sh
-readline "Please enter motherboard.ver address (${motherboard.ver}):" ver
-if [ ! -z $ver ]; then
-	echo "setting ver to:"${ver}
-	motherboard.ver=${ver}
-	state -s motherboard
-fi
