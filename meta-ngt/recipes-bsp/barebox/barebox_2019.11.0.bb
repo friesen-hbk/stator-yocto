@@ -29,3 +29,6 @@ SRC_URI += "file://0013-state-comment-out-condition-which-prevents-the-value.pat
 SRC_URI += "file://0014-hbm_soc-remove-offsets-from-device-tree-barebox-stat.patch"
 
 
+do_configure_prepend() {
+
+}
