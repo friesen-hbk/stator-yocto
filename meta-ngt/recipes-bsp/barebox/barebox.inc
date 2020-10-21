@@ -25,11 +25,10 @@ COMPATIBLE_MACHINE = "none"
 EXTRA_OEMAKE = "CROSS_COMPILE=${TARGET_PREFIX}"
 
 do_configure() {
-	if [ -e ${WORKDIR}/barebox.config.${PV} ]; then
-		cp ${WORKDIR}/barebox.config.${PV} ${S}/.config
+	if [ -e ${WORKDIR}/defconfig ]; then
+		cp ${WORKDIR}/defconfig ${S}/.config
 	else
-		bbwarn "${WORKDIR}"
-		bbwarn "No barebox.config.${PV} given"
+		bbwarn "No defconfig given"
 	fi
 
 	cml1_do_configure
@@ -46,14 +45,7 @@ do_compile () {
 		                ${B}/.config; \
 
 	fi
-	if [ -d ${WORKDIR}/minienv/ ]; then \
-		mkdir -p ${S}/.yocto-defaultenv
-		cp -r ${WORKDIR}/minienv/* ${S}/.yocto-defaultenv/; \
-		grep -q .yocto-defaultenv ${B}/.config || \
-	        sed -i -e "s,^\(CONFIG_DEFAULT_ENVIRONMENT_PATH=.*\)\"$,\1 .yocto-defaultenv\"," \
-		                ${B}/.config; \
 
-	fi
 	# Barebox uses pkg-config only for building native tools
 	export PKG_CONFIG_LIBDIR="${STAGING_DIR_NATIVE}${libdir}/pkgconfig:${STAGING_DIR_NATIVE}/usr/share/pkgconfig"
 	export PKG_CONFIG_SYSROOT_DIR=
@@ -91,16 +83,17 @@ do_install() {
 # Suffix that allows to create different barebox images in one BSP
 BAREBOX_IMAGE_SUFFIX = ""
 
+do_deploy[cleandirs] = "${DEPLOYDIR}"
 do_deploy[vardepsexclude] = "DATETIME"
 do_deploy () {
 	install -d ${DEPLOYDIR}
-	if [ -e ${S}/barebox-flash-image ]; then
-		install -m 644 -t ${DEPLOYDIR}/ ${S}/barebox-flash-image
+	if [ -e ${B}/barebox-flash-image ]; then
+		install -m 644 -t ${DEPLOYDIR}/ ${B}/barebox-flash-image
 	fi
-	if [ -e ${S}/barebox.efi ]; then
-		install -m 644 -t ${DEPLOYDIR}/ ${S}/barebox.efi
+	if [ -e ${B}/barebox.efi ]; then
+		install -m 644 -t ${DEPLOYDIR}/ ${B}/barebox.efi
 	fi
-	for IMAGE in ${S}/images/*.img; do
+	for IMAGE in ${B}/images/*.img; do
 		if [ -e ${IMAGE} ]; then
 			BAREBOX_IMG_BASENAME=$(basename ${IMAGE} .img)${BAREBOX_IMAGE_SUFFIX}
 			install -m 644 -T ${IMAGE} ${DEPLOYDIR}/${BAREBOX_IMG_BASENAME}-${DATETIME}.img

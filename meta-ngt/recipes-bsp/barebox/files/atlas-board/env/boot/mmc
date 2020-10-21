@@ -1,7 +1,0 @@
-#!/bin/sh
-
-path="/mnt/mmc0.2/lib/firmware"
-
-#firmwareload ${path}/bitstream
-
-boot mmc0.2
