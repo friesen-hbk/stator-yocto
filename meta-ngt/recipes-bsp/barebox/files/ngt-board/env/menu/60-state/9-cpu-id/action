@@ -1,0 +1,7 @@
+#!/bin/sh
+readline "Please enter socboard type identifier:(${socboard.typ}):" typ
+if [ ! -z $typ ]; then
+	echo "setting typ to:${typ}"
+	socboard.typ=$typ
+	state -s socboard
+fi

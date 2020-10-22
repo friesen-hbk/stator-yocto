@@ -1,0 +1,5 @@
+#!/bin/sh
+
+echo "Enter 'exit' to get back to the menu"
+echo "Disable the watchdog with \"wd 0\"!"
+sh

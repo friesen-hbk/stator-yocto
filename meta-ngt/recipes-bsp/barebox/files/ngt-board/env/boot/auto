@@ -1,0 +1,16 @@
+#!/bin/sh
+readf /dev/eeprom0.bootsrc bootsrc
+if [ $bootsrc -eq '0' ]; then
+        global linux.bootargs.root="root=ubi0:root0"
+else
+        global linux.bootargs.root="root=ubi0:root1"
+fi
+
+echo "loading fpga firmware"
+firmwareload /mnt/nand${bootsrc}/lib/firmware/soc_system.rbf
+
+enable_bridges
+
+global linux.bootargs.common="ubi.mtd=0 rootfstype=ubifs mtdoops.mtddev=6 "
+echo booting nand$bootsrc
+boot /mnt/nand${bootsrc}

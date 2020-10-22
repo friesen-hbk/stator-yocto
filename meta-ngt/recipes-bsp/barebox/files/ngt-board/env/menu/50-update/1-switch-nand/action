@@ -1,0 +1,3 @@
+#!/bin/sh
+switch_root
+sleep 1

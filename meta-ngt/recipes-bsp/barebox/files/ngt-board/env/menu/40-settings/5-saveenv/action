@@ -1,0 +1,8 @@
+#!/bin/sh
+
+saveenv /dev/mtd0.barebox-environment
+if [ $? != 0 ]; then
+	echo "saving environment failed"
+fi
+
+sleep 2

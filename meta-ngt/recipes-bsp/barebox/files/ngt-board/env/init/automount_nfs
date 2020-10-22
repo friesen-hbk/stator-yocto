@@ -1,0 +1,3 @@
+# automount nfs server's nfsroot
+mkdir -p /mnt/nfs
+automount /mnt/nfs 'dhcp && mount -t nfs ${eth0.serverip}:/tftpboot/${global.user} /mnt/nfs'

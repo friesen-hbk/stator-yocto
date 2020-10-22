@@ -1,0 +1,17 @@
+#!/bin/sh
+
+echo "=================="
+echo "HBM NGT"
+echo "=================="
+echo
+echo "MAC0 : ${motherboard.mac0}"
+echo
+echo -e "     : MAINBRD\tCPUBRD\t"
+echo "---------------------------------"
+echo -e "TYP  : ${motherboard.typ}\t${socboard.typ}"
+echo -e "VER  : ${motherboard.ver}\t${socboard.ver}"
+echo -e "BCO  : ${motherboard.bco}\t${socboard.bco}"
+echo -e "BCU  : ${motherboard.bcu}\t${socboard.bcu}"
+echo -e "SAPA : ${motherboard.sapa}\t${socboard.sapa}"
+echo -e "SAPM : ${motherboard.sapm}\t${socboard.sapm}"
+echo "--------------------------------"

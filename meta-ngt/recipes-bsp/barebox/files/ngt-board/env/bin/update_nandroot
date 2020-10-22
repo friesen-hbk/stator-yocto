@@ -1,0 +1,17 @@
+#!/bin/sh
+if [ -z $2 ]; then
+        echo "update_nandroot <tftp_dir> <rootnr>"
+        exit
+fi
+rootnr=$2
+if [ -z $rootnr ]; then
+        rootnr='0';
+fi
+if test -z $global.dhcp.tftp_server_name; then
+        dhcp
+fi
+if [ -c /dev/nand0.work.ubi ]; then
+	ubiattach /dev/nand0.work
+fi
+echo downloading nand rootfs to /dev/nand0.work.ubi.root$rootnr
+tftp $1/root.ubifs /dev/nand0.work.ubi.root$rootnr

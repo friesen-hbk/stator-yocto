@@ -1,0 +1,2 @@
+automount -d /mnt/nand0 'if [ -c /dev/nand0.work.ubi ]; then ubiattach /dev/nand0.work;fi; mount -t ubifs /dev/nand0.work.ubi.root0 /mnt/nand0'
+automount -d /mnt/nand1 'if [ -c /dev/nand0.work.ubi ]; then ubiattach /dev/nand0.work;fi; mount -t ubifs /dev/nand0.work.ubi.root1 /mnt/nand1'

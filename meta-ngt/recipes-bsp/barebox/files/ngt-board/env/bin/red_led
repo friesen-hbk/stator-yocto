@@ -1,0 +1,6 @@
+#!/bin/sh
+
+while true ; do
+    led 0 0 #red
+    led 1 1 #green off
+done

@@ -1,7 +1,7 @@
 SUMMARY = "Barebox - a bootloader that inherits the best of U-Boot and the Linux kernel"
 HOMEPAGE = "http://www.barebox.org/"
 SECTION = "bootloaders"
-PROVIDES = "virtual/bootloader"
+PROVIDES = "barebox-preloader"
 
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=f5125d13e000b9ca1f0d3364286c4192"
@@ -14,24 +14,19 @@ inherit cml1
 DEPENDS = "libusb1-native lzop-native bison-native flex-native"
 
 
-PACKAGES += "${PN}-bareboxenv ${PN}-bareboxcrc32 ${PN}-kernel-install \
-         ${PN}-bareboximd"
-
-SRC_URI += "file://env"
-SRC_URI += "file://${BPN}.config.${PV}"
-
-#S = "${WORKDIR}/barebox-${PV}"
-#B = "${WORKDIR}/${PN}-${PV}"
-
+S = "${WORKDIR}/barebox-${PV}"
+B = "${WORKDIR}/${PN}-${PV}"
 
 EXTRA_OEMAKE = "CROSS_COMPILE=${TARGET_PREFIX}"
 
 do_configure() {
 
     echo "---->"
-    echo "Bootloader Config : "
+    echo "Preloader Config :"
     echo ${PN}.config.${PV}
     echo "<---"
+
+    oe_runmake distclean
 
     if [ -e ${WORKDIR}/${PN}.config.${PV} ]; then
 	cp ${WORKDIR}/${PN}.config.${PV} ${S}/.config

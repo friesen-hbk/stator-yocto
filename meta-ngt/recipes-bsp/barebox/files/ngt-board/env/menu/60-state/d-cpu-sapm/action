@@ -1,0 +1,7 @@
+#!/bin/sh
+readline "Please enter socboard sap material identifier:(${socboard.sapm}):" sap
+if [ ! -z ${sap} ]; then
+	echo "setting sapm to:" $sap
+	socboard.sapm=${sap}
+	state -s socboard
+fi

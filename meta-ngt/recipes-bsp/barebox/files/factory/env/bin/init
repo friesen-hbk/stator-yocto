@@ -1,0 +1,49 @@
+#!/bin/sh
+
+global hostname
+global user
+global autoboot_timeout
+global boot.default
+global allow_color
+global linux.bootargs.base
+global linux.bootargs.console
+global linux.bootargs.dyn.ip
+global linux.bootargs.dyn.root
+
+echo "==========================="
+echo "  FACTORY FIRMWARE UPDATE "
+echo "==========================="
+
+eth0.ethaddr=$motherboard.mac0
+eth1.ethaddr=$motherboard.mac1
+global dhcp.vendor_id=HBM-${motherboard.typ}
+
+echo "MAC0 : ${motherboard.mac0}"
+echo
+echo "     : MAINBRD     CPUBRD"
+echo "---------------------------------"
+echo "TYP  : ${motherboard.typ}  ${socboard.typ}"
+echo "VER  : ${motherboard.ver}  ${socboard.ver}"
+echo "BCO  : ${motherboard.bco}  ${socboard.bco}"
+echo "BCU  : ${motherboard.bcu}  ${socboard.bcu}"
+echo "SAPA : ${motherboard.sapa}  ${socboard.sapa}"
+echo "SAPM : ${motherboard.sapm}  ${socboard.sapm}"
+echo "--------------------------------"
+
+if [ ! -e /factory_update_init ] ; then
+    if [ -z $global.dhcp.tftp_server_name ]; then
+# nur für SPEA disaster
+        dhcp -v NGT
+    fi
+
+    echo "Try to get $global.dhcp.bootfile from $global.dhcp.tftp_server_name"
+    tftp $global.dhcp.bootfile /factory_update_init
+
+    if [ -e /factory_update_init ]; then
+       . /factory_update_init
+    fi
+fi
+
+echo "!!!! WARNING !!!! "
+echo "The Bootloader update script do not exists. "
+echo "Check your Network/TFTP Settings."
