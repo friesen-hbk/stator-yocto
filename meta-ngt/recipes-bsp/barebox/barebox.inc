@@ -28,15 +28,15 @@ EXTRA_OEMAKE = "CROSS_COMPILE=${TARGET_PREFIX}"
 
 do_configure() {
 
-    echo "---->"
-    echo "Bootloader Config : "
-    echo ${PN}.config.${PV}
-    echo "<---"
+    # echo "---->"
+    # echo "Bootloader Config : "
+    # echo ${PN}.config.${PV}
+    # echo "<---"
 
     if [ -e ${WORKDIR}/${PN}.config.${PV} ]; then
 	cp ${WORKDIR}/${PN}.config.${PV} ${S}/.config
     else
-	bbwarn "No defconfig given"
+	bbwarn "No defconfig given in barebox"
     fi
 
     cml1_do_configure
@@ -95,19 +95,19 @@ do_deploy[cleandirs] = "${DEPLOYDIR}"
 do_deploy[vardepsexclude] = "DATETIME"
 do_deploy () {
 	install -d ${DEPLOYDIR}
-	if [ -e ${B}/barebox-flash-image ]; then
-		install -m 644 -t ${DEPLOYDIR}/ ${B}/barebox-flash-image
+	if [ -e ${B}/barebox.bin ]; then
+		install -m 644 -T ${B}/barebox.bin ${DEPLOYDIR}/barebox-image
 	fi
-	if [ -e ${B}/barebox.efi ]; then
-		install -m 644 -t ${DEPLOYDIR}/ ${B}/barebox.efi
-	fi
-	for IMAGE in ${B}/images/*.img; do
-		if [ -e ${IMAGE} ]; then
-			BAREBOX_IMG_BASENAME=$(basename ${IMAGE} .img)${BAREBOX_IMAGE_SUFFIX}
-			install -m 644 -T ${IMAGE} ${DEPLOYDIR}/${BAREBOX_IMG_BASENAME}-${DATETIME}.img
-			ln -sf ${BAREBOX_IMG_BASENAME}-${DATETIME}.img ${DEPLOYDIR}/${BAREBOX_IMG_BASENAME}.img
-		fi
-	done
+# 	if [ -e ${B}/barebox.efi ]; then
+# 		install -m 644 -t ${DEPLOYDIR}/ ${B}/barebox.efi
+# 	fi
+# 	for IMAGE in ${B}/images/*.img; do
+# 		if [ -e ${IMAGE} ]; then
+# 			BAREBOX_IMG_BASENAME=$(basename ${IMAGE} .img)${BAREBOX_IMAGE_SUFFIX}
+# 			install -m 644 -T ${IMAGE} ${DEPLOYDIR}/${BAREBOX_IMG_BASENAME}-${DATETIME}.img
+# 			ln -sf ${BAREBOX_IMG_BASENAME}-${DATETIME}.img ${DEPLOYDIR}/${BAREBOX_IMG_BASENAME}.img
+# 		fi
+# 	done
 }
 
 FILES_${PN} = ""

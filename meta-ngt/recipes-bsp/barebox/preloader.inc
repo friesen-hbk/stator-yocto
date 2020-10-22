@@ -13,14 +13,25 @@ inherit cml1
 
 DEPENDS = "libusb1-native lzop-native bison-native flex-native"
 
+SRC_URI += "file://${BPN}.config.${PV}"
+
 EXTRA_OEMAKE = "CROSS_COMPILE=${TARGET_PREFIX}"
 
+S = "${WORKDIR}/barebox-${PV}"
+B = "${WORKDIR}/barebox-${PV}"
+
+
 do_configure() {
+
+    # bbwarn "Bootloader Config : ${WORKDIR}/${PN}.config.${PV}"
+    # bbwarn "B: ${B}"
+    # bbwarn "S: ${S}"
+
 
     if [ -e ${WORKDIR}/${PN}.config.${PV} ]; then
 	cp ${WORKDIR}/${PN}.config.${PV} ${S}/.config
     else
-	bbwarn "No defconfig given"
+	bbwarn "No defconfig given in preloader"
     fi
 
     cml1_do_configure
@@ -59,20 +70,24 @@ BAREBOX_IMAGE_SUFFIX = ""
 do_deploy[cleandirs] = "${DEPLOYDIR}"
 do_deploy[vardepsexclude] = "DATETIME"
 do_deploy () {
+
+
+     bbwarn "B: ${B}"
+     bbwarn "S: ${S}"
+
+
+
 	install -d ${DEPLOYDIR}
-	if [ -e ${B}/barebox-flash-image ]; then
-		install -m 644 -t ${DEPLOYDIR}/ ${B}/barebox-flash-image
+	if [ -e ${B}/barebox.bin ]; then
+		install -m 644 -T ${B}/barebox.bin ${DEPLOYDIR}/barebox-xload-image
 	fi
-	if [ -e ${B}/barebox.efi ]; then
-		install -m 644 -t ${DEPLOYDIR}/ ${B}/barebox.efi
-	fi
-	for IMAGE in ${B}/images/*.img; do
-		if [ -e ${IMAGE} ]; then
-			BAREBOX_IMG_BASENAME=$(basename ${IMAGE} .img)${BAREBOX_IMAGE_SUFFIX}
-			install -m 644 -T ${IMAGE} ${DEPLOYDIR}/${BAREBOX_IMG_BASENAME}-${DATETIME}.img
-			ln -sf ${BAREBOX_IMG_BASENAME}-${DATETIME}.img ${DEPLOYDIR}/${BAREBOX_IMG_BASENAME}.img
-		fi
-	done
+#	for IMAGE in ${B}/images/*.img; do
+#		if [ -e ${IMAGE} ]; then
+#			BAREBOX_IMG_BASENAME=$(basename ${IMAGE} .img)${BAREBOX_IMAGE_SUFFIX}
+#			install -m 644 -T ${IMAGE} ${DEPLOYDIR}/${BAREBOX_IMG_BASENAME}-${DATETIME}.img
+#			ln -sf ${BAREBOX_IMG_BASENAME}-${DATETIME}.img ${DEPLOYDIR}/${BAREBOX_IMG_BASENAME}.img
+#		fi
+#	done
 }
 
 addtask deploy before do_build after do_compile
