@@ -24,9 +24,13 @@ $ sudo apt install gawk wget git-core diffstat unzip texinfo gcc-multilib \
 To set up the BSP:
 
 ``` shell
-$ git clone git@gitlab.hbm.com:next/next-firmware.git --recurse-submodules -j$(nproc)
-$ cd next-firmware
+$ git clone git@gitlab.hbm.com:next/stator-yocto.git --recurse-submodules -j$(nproc)
+$ cd stator-yocto
 $ ./bootstrap-yocto
+$ MACHINE=ngt-board source setup-environment build-ngt
+$ bitbake ubifs-image
+$ bitbake hbg-image
+
 ```
 
 ## devtool issue
@@ -34,7 +38,7 @@ $ ./bootstrap-yocto
 There is an issue running devtool on certain recipes, for instance:
 
 ``` shell
-$ devtool modify u-boot-xlnx
+$ devtool modify linux-ngt
 
 (...skip stack trace...)
 
