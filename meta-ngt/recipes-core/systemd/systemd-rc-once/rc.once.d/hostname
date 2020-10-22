@@ -1,0 +1,7 @@
+#!/bin/sh
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+
+cat /sys/class/net/eth0/address| sed -e 's/://g' -e 's/0009e5//' -e 's/^/ngt-/' > /etc/hostname
+hostname -F /etc/hostname
+

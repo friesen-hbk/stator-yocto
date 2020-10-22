@@ -13,6 +13,8 @@ SRC_URI = "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git;protoc
 		   file://0005_mtd.patch \
 		   file://0006-denali-hack-overwrite-setup-values.patch \
 		   file://0001-scripts-dtc-Remove-redundant-YYLOC-global-declaratio.patch \
+		   file://0001-Makfefile-linux-5.4-add-warning-cflags-on-LSDK-20.04.patch \
+		   file://0001-perf-Make-perf-able-to-build-with-latest-libbfd.patch \
            "
 
 LIC_FILES_CHKSUM  = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
