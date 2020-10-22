@@ -1,7 +1,0 @@
-#!/bin/sh
-readline "Please enter socboard hardware version:(${socboard.ver}):" ver
-if [ ! -z ${ver} ]; then
-	echo "setting ver to:${ver}"
-	socboard.ver=${ver}
-	state -s socboard
-fi

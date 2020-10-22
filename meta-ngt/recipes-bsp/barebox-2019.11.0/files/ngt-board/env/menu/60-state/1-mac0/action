@@ -1,7 +1,0 @@
-#!/bin/sh
-readline "Please enter mac0 address (${motherboard.mac0}):" mac
-if [ ! -z ${mac} ]; then
-	echo "setting mac0 to:"${mac}
-	motherboard.mac0=${mac}
-	state -s motherboard
-fi

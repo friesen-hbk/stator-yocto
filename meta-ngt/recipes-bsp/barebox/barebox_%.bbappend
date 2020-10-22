@@ -1,0 +1,4 @@
+FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+
+SRC_URI += "file://0001-ARM-add-fncpy.h-from-linux-v4.6.patch file://0002-firmware-socfpga-set-APPLYCFG-after-loading-bitstrea.patch file://0003-reset-add-of_reset_control_get-to-header.patch file://0004-drivers-add-fpga-bridge-framework.patch file://0005-drivers-fpga-add-socfpga-bridges.patch file://0006-fpga-add-fpga-region-support.patch file://0007-drivers-firmware-socfpga-remove-bridges-shutdown.patch file://0008-firmware-socfpga-change-function-prefixes.patch file://0009-firmware-import-Arria10-fpgamgr-from-linux.patch file://0010-firmware-add-support-for-compressed-images.patch file://0011-ARM-SoCFPGA-Add-new-board-from-HBM.patch file://0012-ARM-configs-add-socfpga-qspi-xload-defconfig.patch file://0013-state-comment-out-condition-which-prevents-the-value.patch file://0014-hbm_soc-remove-offsets-from-device-tree-barebox-stat.patch file://0015-ngtboard-added-config-files.patch"
+

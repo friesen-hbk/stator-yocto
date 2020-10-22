@@ -1,9 +1,0 @@
-#!/bin/sh
-if [ -z $1 ]; then
-        echo "update_all <tftp_dir>"
-        exit
-fi
-/env/bin/update_nandroot $1 0
-/env/bin/update_nandroot $1 1
-/env/bin/update_barebox $1
-/env/bin/update_preloader $1

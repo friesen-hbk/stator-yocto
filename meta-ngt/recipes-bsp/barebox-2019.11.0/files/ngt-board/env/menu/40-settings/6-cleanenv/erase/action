@@ -1,2 +1,0 @@
-#!/bin/sh
-erase /dev/mtd0.barebox-environment

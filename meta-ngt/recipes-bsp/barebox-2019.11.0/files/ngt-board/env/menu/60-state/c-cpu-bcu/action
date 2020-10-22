@@ -1,7 +1,0 @@
-#!/bin/sh
-readline "Please enter socboard bottom barcode identifier (${socboard.bcu}):" bcu
-if [ ! -z ${bcu} ]; then
-	echo "setting bcu to:${bcu}"
-	socboard.bcu=${bcu}
-	state -s socboard
-fi

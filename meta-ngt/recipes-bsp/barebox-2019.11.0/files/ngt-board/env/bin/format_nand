@@ -1,8 +1,0 @@
-#!/bin/sh
-erase /dev/nand0.work
-ubiformat /dev/nand0.work -y
-ubiattach /dev/nand0.work
-ubimkvol /dev/nand0.work.ubi root0 0x7000000
-ubimkvol /dev/nand0.work.ubi root1 0x7000000
-ubidetach /dev/nand0.work
-ubiattach /dev/nand0.work

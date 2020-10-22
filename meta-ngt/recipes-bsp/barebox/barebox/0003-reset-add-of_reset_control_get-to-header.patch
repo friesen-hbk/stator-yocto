@@ -1,0 +1,35 @@
+From 49353aabc7e5bad725658850ca2a067eee67af85 Mon Sep 17 00:00:00 2001
+From: Andreas Friesen <andreas.friesen@hbkworld.com>
+Date: Wed, 21 Oct 2020 22:27:38 +0200
+Subject: [PATCH] reset: add of_reset_control_get to header
+
+---
+ drivers/reset/core.c  | 2 +-
+ include/linux/reset.h | 1 +
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/reset/core.c b/drivers/reset/core.c
+index 99b9c8065..792ca1993 100644
+--- a/drivers/reset/core.c
++++ b/drivers/reset/core.c
+@@ -147,7 +147,7 @@ EXPORT_SYMBOL_GPL(reset_control_deassert);
+  *
+  * Use of id names is optional.
+  */
+-static struct reset_control *of_reset_control_get(struct device_node *node,
++struct reset_control *of_reset_control_get(struct device_node *node,
+ 						  const char *id)
+ {
+ 	struct reset_control *rstc = ERR_PTR(-ENODEV);
+diff --git a/include/linux/reset.h b/include/linux/reset.h
+index 4a92a177b..859bdb081 100644
+--- a/include/linux/reset.h
++++ b/include/linux/reset.h
+@@ -11,6 +11,7 @@ int reset_control_assert(struct reset_control *rstc);
+ int reset_control_deassert(struct reset_control *rstc);
+ 
+ struct reset_control *reset_control_get(struct device_d *dev, const char *id);
++struct reset_control *of_reset_control_get(struct device_node *node, const char *id);
+ void reset_control_put(struct reset_control *rstc);
+ 
+ int __must_check device_reset(struct device_d *dev);
