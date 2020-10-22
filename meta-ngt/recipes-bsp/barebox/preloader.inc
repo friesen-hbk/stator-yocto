@@ -71,23 +71,10 @@ do_deploy[cleandirs] = "${DEPLOYDIR}"
 do_deploy[vardepsexclude] = "DATETIME"
 do_deploy () {
 
-
-     bbwarn "B: ${B}"
-     bbwarn "S: ${S}"
-
-
-
 	install -d ${DEPLOYDIR}
 	if [ -e ${B}/barebox.bin ]; then
 		install -m 644 -T ${B}/barebox.bin ${DEPLOYDIR}/barebox-xload-image
 	fi
-#	for IMAGE in ${B}/images/*.img; do
-#		if [ -e ${IMAGE} ]; then
-#			BAREBOX_IMG_BASENAME=$(basename ${IMAGE} .img)${BAREBOX_IMAGE_SUFFIX}
-#			install -m 644 -T ${IMAGE} ${DEPLOYDIR}/${BAREBOX_IMG_BASENAME}-${DATETIME}.img
-#			ln -sf ${BAREBOX_IMG_BASENAME}-${DATETIME}.img ${DEPLOYDIR}/${BAREBOX_IMG_BASENAME}.img
-#		fi
-#	done
 }
 
 addtask deploy before do_build after do_compile

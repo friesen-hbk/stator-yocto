@@ -98,16 +98,6 @@ do_deploy () {
 	if [ -e ${B}/barebox.bin ]; then
 		install -m 644 -T ${B}/barebox.bin ${DEPLOYDIR}/barebox-image
 	fi
-# 	if [ -e ${B}/barebox.efi ]; then
-# 		install -m 644 -t ${DEPLOYDIR}/ ${B}/barebox.efi
-# 	fi
-# 	for IMAGE in ${B}/images/*.img; do
-# 		if [ -e ${IMAGE} ]; then
-# 			BAREBOX_IMG_BASENAME=$(basename ${IMAGE} .img)${BAREBOX_IMAGE_SUFFIX}
-# 			install -m 644 -T ${IMAGE} ${DEPLOYDIR}/${BAREBOX_IMG_BASENAME}-${DATETIME}.img
-# 			ln -sf ${BAREBOX_IMG_BASENAME}-${DATETIME}.img ${DEPLOYDIR}/${BAREBOX_IMG_BASENAME}.img
-# 		fi
-# 	done
 }
 
 FILES_${PN} = ""
